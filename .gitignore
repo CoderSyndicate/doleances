@@ -1,0 +1,39 @@
+# Secrets. `test/.env` is a real file: this rule is load-bearing, not
+# boilerplate.
+**/*.env
+
+# Development SQLite databases.
+*.db
+*.db-shm
+*.db-wal
+
+# Locally built service binaries, and what CI writes.
+/backend
+/console
+/frontend
+dist/
+
+# One directory per local launch: logs, databases, storage.
+test/run/
+
+# The checkers and the classifier corpus. Deliberately out of the repository:
+# the corpus holds realistic abuse and working injection payloads.
+.local/
+
+# Test output.
+coverage.out
+
+# Go vendor directories — use go.sum + the module proxy instead.
+#
+# Third-party *browser* assets are a different thing and live in
+# `internal/frontend/static/third-party/`, which is tracked: they are embedded
+# into the binary and the site does not work without them. They were briefly
+# put under a directory called `vendor/` and this rule swallowed them silently
+# — the build worked locally and would have failed for everybody else.
+vendor/
+
+# Editor and OS droppings, here rather than only in a personal global ignore
+# so a contributor's clone does not carry them in.
+.DS_Store
+.idea/
+.vscode/

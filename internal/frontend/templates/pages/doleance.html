@@ -1,0 +1,70 @@
+{{define "content"}}
+<div class="prose">
+  <h1>{{ .T "write.title" }}</h1>
+  <p class="lede">{{ .T "write.lede" }}</p>
+</div>
+
+{{/* The examples sit beside the form rather than a screen below it. Somebody
+     who has never written a doléance and is looking at an empty textarea needs
+     to see what one looks like *while* they write, not after they have given
+     up scrolling to find out. */}}
+<div class="split">
+  <div class="prose">
+    {{ if .Error }}<p class="form-error" role="alert">{{ .Error }}</p>{{ end }}
+
+    <form method="post" action="/doleance">
+    <label for="text">{{ .T "write.text" }}
+      <span class="hint">{{ .T "write.text_hint" }}</span>
+    </label>
+    <textarea id="text" name="text" required>{{ .Draft.Text }}</textarea>
+
+    <label for="nickname">{{ .T "write.nickname" }}
+      <span class="hint">{{ .T "write.nickname_hint" }}</span>
+    </label>
+    <input type="text" id="nickname" name="nickname" autocomplete="off" value="{{ .Draft.Nickname }}">
+
+    <label for="birth_year">{{ .T "write.birth_year" }}
+      <span class="hint">{{ .T "write.birth_year_hint" }}</span>
+    </label>
+    <select id="birth_year" name="birth_year">
+      <option value="">{{ .T "write.unspecified" }}</option>
+      {{ $chosen := .Draft.BirthYear }}
+      {{ range .BirthYears }}<option value="{{ . }}"{{ if eq . $chosen }} selected{{ end }}>{{ . }}</option>{{ end }}
+    </select>
+
+    <label for="activity">{{ .T "write.activity" }}
+      <span class="hint">{{ .T "write.activity_hint" }}</span>
+    </label>
+    <input type="text" id="activity" name="activity" maxlength="128" autocomplete="off" value="{{ .Draft.Activity }}">
+
+    <label>{{ .T "write.location" }}
+      <span class="hint">{{ .T "write.location_hint" }}</span>
+    </label>
+    <div id="map" data-country="{{ .Country }}" data-pick="true"></div>
+    <input type="hidden" id="latitude" name="latitude" data-role="latitude" value="{{ with .Draft.Latitude }}{{ . }}{{ end }}">
+    <input type="hidden" id="longitude" name="longitude" data-role="longitude" value="{{ with .Draft.Longitude }}{{ . }}{{ end }}">
+    <input type="hidden" id="place" name="place" value="{{ .Draft.Place }}">
+    <input type="hidden" id="country" name="country" value="{{ .Draft.Country }}">
+    <input type="hidden" id="zoom" name="zoom" data-role="zoom" value="{{ with .Draft.Zoom }}{{ . }}{{ end }}">
+
+    <label for="expires_on">{{ .T "write.expiry" }}
+      <span class="hint">{{ .T "write.expiry_hint" }}</span>
+    </label>
+    <input type="date" id="expires_on" name="expires_on" value="{{ .Draft.ExpiresOn }}">
+
+    <label class="checkbox">
+      <input type="checkbox" name="agreement" required>
+      <span>{{ .T "write.agreement" }}</span>
+    </label>
+
+    <button class="button" type="submit">{{ .T "write.submit" }}</button>
+  </form>
+  </div>
+
+  <aside class="split-aside">
+    <h2 id="examples">{{ .T "write.examples" }}</h2>
+    <p class="section-note">{{ .T "write.examples_note" }}</p>
+    {{ template "corpus-window" dict "Window" .Examples "Page" . "Anchor" "examples" }}
+  </aside>
+</div>
+{{end}}

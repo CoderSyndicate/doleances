@@ -1,0 +1,134 @@
+{{define "layout"}}<!DOCTYPE html>
+<html lang="{{ .Lang }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ .T .Title }} — {{ .T "console.name" }}</title>
+  {{/* Three declarations for one icon, because browsers do not agree.
+       The SVG is the source and scales to anything; the .ico is what Safari
+       actually draws, and the touch icon is what iOS puts on a home screen.
+       The last two are rastered from the first at request time. */}}
+  <link rel="icon" type="image/svg+xml" href="/theme/assets/mark">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="32x32">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="stylesheet" href="/static/tokens.css?v={{ .AssetVersion }}">
+  <link rel="stylesheet" href="/static/base.css?v={{ .AssetVersion }}">
+  <!-- The active theme, loaded after the defaults so it overrides only what it
+       declares. If it fails to load, the built-in palette still applies. -->
+  <link rel="stylesheet" href="/theme/tokens.css">
+  <!-- Runs synchronously so data-theme is set before the first paint: loading
+       this asynchronously is what produces a flash of the wrong theme. -->
+  <script nonce="{{ .Nonce }}">
+    (function () {
+      try {
+        var t = localStorage.getItem("doleances-theme");
+        if (t === "light" || t === "dark") {
+          document.documentElement.setAttribute("data-theme", t);
+        }
+      } catch (e) {}
+    })();
+  </script>
+</head>
+<body>
+  <header class="masthead">
+    <div class="masthead-inner">
+      <div class="masthead-identity">
+        <img class="logo" src="/theme/assets/logo" alt="">
+        <div>
+        <a class="wordmark" href="/">{{ .T "console.name" }}</a>
+        <div class="tagline">{{ .T "console.tagline" }}</div>
+        </div>
+      </div>
+      <div class="masthead-controls">
+        <button id="theme-toggle" class="theme-toggle" type="button"
+                title="{{ .T "nav.theme_toggle" }}" aria-label="{{ .T "nav.theme_toggle" }}">☾</button>
+      {{/* The language selector: a flag, and the rest behind it.
+           It shows no text on purpose, so it costs the masthead one control
+           instead of one per language — but a picture is not a name, so every
+           entry carries its language's own endonym in .visually-hidden, which
+           is what a screen reader reads and what the title attribute shows.
+           <details> rather than a script, like every other disclosure here. */}}
+      <details class="languages">
+        <summary title="{{ .T "nav.language" }}">
+          <img src="/flags/{{ .Lang }}.svg" alt="" width="24" height="16">
+          <span class="visually-hidden">{{ .T "nav.language" }}: {{ languageName .Lang }}</span>
+        </summary>
+        <ul class="languages-menu">
+          {{ $lang := .Lang }}
+          {{ range .Languages }}
+          <li>
+            <a href="?lang={{ . }}" hreflang="{{ . }}" title="{{ languageName . }}"
+               aria-current="{{ if eq . $lang }}true{{ else }}false{{ end }}">
+              <img src="/flags/{{ . }}.svg" alt="" width="24" height="16">
+              <span class="visually-hidden">{{ languageName . }}</span>
+            </a>
+          </li>
+          {{ end }}
+        </ul>
+      </details>
+      </div>
+    </div>
+  </header>
+  <div class="stripe" aria-hidden="true"></div>
+
+  <nav class="nav" aria-label="{{ .T "nav.main" }}">
+    <div class="nav-inner">
+      {{ template "navlink" dict "Page" . "Href" "/" "Key" "nav.queue" }}
+      {{ template "navlink" dict "Page" . "Href" "/spam" "Key" "nav.spam" }}
+      {{/* Absent, not disabled, when this deployment has no groups. */}}
+      {{ if .Groups }}
+      {{ template "navlink" dict "Page" . "Href" "/groups" "Key" "nav.groups" }}
+      {{ end }}
+      {{ template "navlink" dict "Page" . "Href" "/subjects" "Key" "nav.subjects" }}
+      {{ template "navlink" dict "Page" . "Href" "/audit" "Key" "nav.audit" }}
+      {{ template "navlink" dict "Page" . "Href" "/settings/llm" "Key" "nav.llm" }}
+      {{ template "navlink" dict "Page" . "Href" "/snapshots" "Key" "nav.snapshots" }}
+      {{ template "navlink" dict "Page" . "Href" "/settings/theme" "Key" "nav.theme" }}
+      {{/* Admin only, and absent rather than refusing for everybody else —
+           the same line the groups entry above draws. A curator who followed
+           it would meet a 403 and have no way to tell a missing role from a
+           broken page. */}}
+      {{ if .Admin }}
+      {{ template "navlink" dict "Page" . "Href" "/settings/people" "Key" "nav.people" }}
+      {{ end }}
+    </div>
+  </nav>
+
+  <main>
+    {{ if .Development }}
+    <p class="warning">{{ .T "console.development" }}</p>
+    {{ end }}
+    {{ template "content" . }}
+  </main>
+
+  <div class="stripe" aria-hidden="true"></div>
+  <footer>
+    <div class="footer-inner">
+      <p>{{ .T "console.footer" }}</p>
+    </div>
+  </footer>
+  <script src="/static/theme.js?v={{ .AssetVersion }}"></script>
+</body>
+</html>{{end}}
+
+{{define "navlink"}}<a href="{{ .Href }}"{{ if (.Page.IsCurrent .Href) }} aria-current="page"{{ end }}>{{ .Page.T .Key }}</a>{{end}}
+
+{{/* The console's icons, drawn the same as the frontend's and deliberately
+     copied rather than shared: the two services have independent template sets
+     and a shared partial would mean a third embedded FS. That trade is now
+     worth revisiting — this is three — and the place for it is a set in
+     `internal/web` that every renderer parses.
+
+     A bin, for taking somebody out of this register's roles — never out of the
+     operator's directory, which this console does not delete from. */}}
+{{define "icon-bin"}}<svg class="icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false"
+  fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+><path d="M2.75 4h10.5"/><path d="M6.25 4V2.75h3.5V4"/><path d="M4.25 4l.6 9.25h6.3L11.75 4"/><path d="M6.6 6.5v4.5M9.4 6.5v4.5"/></svg>{{end}}
+
+{{define "icon-plus"}}<svg class="icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false"
+  fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+><path d="M8 3.25v9.5M3.25 8h9.5"/></svg>{{end}}
+
+{{define "icon-close"}}<svg class="icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false"
+  fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+><path d="M4 4l8 8M12 4l-8 8"/></svg>{{end}}

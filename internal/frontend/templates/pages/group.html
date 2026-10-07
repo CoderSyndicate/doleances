@@ -1,0 +1,152 @@
+{{define "content"}}
+<div class="prose">
+  <h1>{{ .Name }}</h1>
+
+  {{ if .Place }}
+  <p class="lede">{{ .Place }}</p>
+  {{ end }}
+
+  {{ if .Hidden }}
+  <p class="section-note">{{ .T "group.hidden" }}</p>
+  {{ end }}
+</div>
+
+{{ if .Description }}
+<article class="card">
+  <p class="card-text">{{ .Description }}</p>
+</article>
+{{ end }}
+
+{{ if .Error }}
+<div class="prose"><p class="form-error" role="alert">{{ .Error }}</p></div>
+{{ end }}
+
+{{/* The two things to do on this page, side by side: be part of the group, or
+     say something to it. Both sit with the group rather than under its diary,
+     because they are what the page is for. */}}
+<div class="prose" id="act">
+  {{ if .Joined }}
+  <p class="form-notice" role="status">{{ .T "join.done" }}</p>
+  {{ else if .Left }}
+  <p class="form-notice" role="status">{{ .T "join.left" }}</p>
+  {{ else if .Sent }}
+  {{/* One sentence, always the same. Whether an admin has a live push
+       subscription is a fact about that person's devices, and a message that
+       varied with it would leak one. */}}
+  <p class="form-notice" role="status">{{ .T "contact.done" }}</p>
+  {{ end }}
+
+  <div class="drawer-actions">
+    {{ if .Member }}
+    <form method="post" action="/groups/{{ .ID }}/leave">
+      <button class="button secondary" type="submit">{{ .T "join.leave" }}</button>
+    </form>
+    {{ else }}
+    <form method="post" action="/groups/{{ .ID }}/join">
+      <button class="button" type="submit">{{ .T "join.title" }}</button>
+    </form>
+    {{ end }}
+
+    <a class="button secondary" href="#write-panel">{{ .T "contact.title" }}</a>
+
+    {{ if .Admin }}
+    <a class="button secondary" href="/groups/{{ .ID }}/manage">{{ .T "manage.title" }}</a>
+    {{ end }}
+  </div>
+
+  {{ if not .SignedIn }}
+  <p class="section-note">{{ .T "join.signin_note" }}</p>
+  {{ end }}
+</div>
+
+{{/* Group information at the top, what it is doing at the bottom — and the
+     next five only, because a page listing everything a group ever did is a
+     history where this has to be an invitation. */}}
+{{ if .Actions }}
+<div class="prose">
+  <h2>{{ .T "actions.next" }}</h2>
+</div>
+
+<div class="grid">
+  {{ range .Actions }}
+  <article class="card">
+    <div class="card-meta">
+      {{ if .NextOn }}<span>{{ .NextOn }}</span>{{ end }}
+      {{ if .Parts }}<span>{{ template "rhythm" dict "Page" $ "Parts" .Parts }}</span>{{ end }}
+      {{ if .Place }}<span>{{ .Place }}</span>{{ end }}
+    </div>
+    {{ if .Note }}<p class="section-note">{{ .Note }}</p>{{ end }}
+    <h3 class="card-title">{{ .Title }}</h3>
+    {{ if .Description }}<p class="card-text">{{ .Description }}</p>{{ end }}
+  </article>
+  {{ end }}
+</div>
+{{ end }}
+
+<div class="prose">
+  {{/* The way back to the map, and nothing else. Starting a group belongs on
+       /around-me, where somebody is looking at a gap in the map — not here,
+       where they are looking at a group that already exists in the place the
+       button would offer to fill. */}}
+  <p class="section-note"><a href="/around-me">&larr; {{ .T "nav.around" }}</a></p>
+</div>
+
+{{/* Opened by the fragment link above, and forced open by the server when
+     there is a draft to come back to. A fragment never reaches the server, so
+     the second way in is the only way to answer a refusal without putting
+     what somebody wrote into a query string, where every log on the route
+     would write it down.
+
+     Not aria-modal: there is no script here, so no focus trap, and claiming a
+     modality we do not enforce is worse than not claiming it. */}}
+<div class="overlay{{ if .Draft }} open{{ end }}" id="write-panel"
+     role="dialog" aria-labelledby="write-title" tabindex="-1">
+  <a class="overlay-backdrop" href="#act" aria-label="{{ .T "manage.close" }}"></a>
+
+  <div class="overlay-panel">
+    <div class="overlay-header">
+      <h2 id="write-title">{{ .T "contact.title" }}</h2>
+      <a class="icon-button" href="#act"
+         title="{{ .T "manage.close" }}" aria-label="{{ .T "manage.close" }}">
+        {{ template "icon-close" }}
+      </a>
+    </div>
+
+    <p>{{ .T "contact.lede" }}</p>
+
+    {{ if .SignedIn }}
+    <form method="post" action="/groups/{{ .ID }}/write">
+      <label for="text">{{ .T "contact.text" }}
+        <span class="hint">{{ .T "contact.text_hint" }}</span>
+      </label>
+      <textarea id="text" name="text" rows="6" maxlength="2000" required>{{ .Draft }}</textarea>
+
+      <div class="drawer-actions">
+        <button class="button" type="submit">{{ .T "contact.submit" }}</button>
+        <a class="button secondary" href="#act">{{ .T "manage.cancel" }}</a>
+      </div>
+    </form>
+    {{ else }}
+    {{/* No textarea for somebody who cannot post it.
+
+         Writing needs an account, and the form used to be offered anyway: the
+         message was typed, the submit redirected to the sign-in page, and the
+         words were thrown away with nothing said. A refusal is allowed to cost
+         a correction and is never allowed to cost what somebody wrote — and
+         the cheapest way to keep that promise is not to invite the writing
+         until it can be sent.
+
+         The way on carries this group, so signing in comes back here rather
+         than to a dashboard. */}}
+    <p class="section-note">{{ .T "contact.signin_first" }}</p>
+
+    <div class="drawer-actions">
+      <a class="button" href="/account/signin?next=/groups/{{ .ID }}">{{ .T "nav.signin" }}</a>
+      <a class="button secondary" href="#act">{{ .T "manage.cancel" }}</a>
+    </div>
+    {{ end }}
+
+    <p class="section-note">{{ .T "contact.privacy" }}</p>
+  </div>
+</div>
+{{end}}

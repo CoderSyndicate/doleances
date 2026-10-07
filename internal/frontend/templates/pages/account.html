@@ -1,0 +1,318 @@
+{{define "content"}}
+<div class="prose">
+  <h1>{{ .T "account.title" }}</h1>
+  <p class="lede">{{ .T "account.lede" }}</p>
+
+  {{ if .Saved }}<p class="form-notice" role="status">{{ .T "manage.saved" }}</p>{{ end }}
+  {{ if .Error }}<p class="form-error" role="alert">{{ .Error }}</p>{{ end }}
+
+  {{/* Reached from here rather than from the navigation, like the
+       notifications: the register is a site most readers use without an
+       account, and a top-level entry for a page only an account has would be
+       an entry most visitors can do nothing with. */}}
+  <p><a class="button secondary" href="/account/bookmarks">{{ .T "account.bookmarks" }}</a></p>
+</div>
+
+{{/* The recovery codes, when they have just been issued. They are shown here
+     and nowhere else, ever: only their hashes are kept, so nothing in this
+     system can produce them again. The page says so rather than letting
+     somebody assume they can come back for them. */}}
+{{ if .Codes }}
+<article class="card">
+  <header class="card-header">
+    <h2 class="card-title">{{ .T "account.codes_title" }}</h2>
+  </header>
+  <p class="card-text">{{ .T "account.codes_why" }}</p>
+
+  <ul class="code-list">
+    {{ range .Codes }}<li><code class="receipt-value">{{ . }}</code></li>{{ end }}
+  </ul>
+
+  <footer class="card-provenance">
+    <p class="card-source">{{ .T "account.codes_warning" }}</p>
+  </footer>
+</article>
+{{ end }}
+
+<div class="prose">
+  <h2>{{ .T "account.name" }}</h2>
+  <form method="post" action="/account">
+    <label for="name">{{ .T "account.name" }}
+      <span class="hint">{{ .T "account.name_hint" }}</span>
+    </label>
+    <input type="text" id="name" name="name" maxlength="60" autocomplete="nickname" required
+           value="{{ .Account.Name }}">
+
+    <div class="drawer-actions">
+      <button class="button" type="submit" name="rename" value="1">{{ .T "manage.save" }}</button>
+    </div>
+  </form>
+  <p class="section-note">{{ .T "account.name_privacy" }}</p>
+</div>
+
+{{/* Three lists, not one. A synced passkey signs somebody in on a device that
+     has never been asked for notification permission, so "has a passkey here",
+     "is signed in here" and "can be notified here" are three different facts
+     about three different sets of devices — and one merged list would be wrong
+     about all three. */}}
+<div data-passkey
+     data-string-unsupported="{{ .T "account.unsupported" }}"
+     data-string-cancelled="{{ .T "account.cancelled" }}"
+     data-string-already="{{ .T "account.already" }}"
+     data-string-failed="{{ .T "account.failed" }}">
+
+  <div class="prose">
+    <h2>{{ .T "account.passkeys" }}</h2>
+    <p class="section-note">{{ .T "account.passkeys_note" }}</p>
+
+    <p class="form-error" role="alert" data-passkey-error hidden></p>
+    <p class="form-error" data-passkey-unsupported hidden>{{ .T "account.unsupported" }}</p>
+
+    {{ if eq (len .Devices.Passkeys) 1 }}
+    {{/* The one warning on this page that is about somebody's situation rather
+         than about a control: a single device-bound passkey is an account one
+         dropped phone away from being unreachable, and there is no address
+         here to send a reset to. */}}
+    <p class="form-notice">{{ .T "account.one_passkey" }}</p>
+    {{ end }}
+  </div>
+
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th scope="col">{{ .T "account.device" }}</th>
+        <th scope="col">{{ .T "account.synced" }}</th>
+        <th scope="col">{{ .T "account.last_used" }}</th>
+        <th scope="col"><span class="visually-hidden">{{ .T "manage.actions" }}</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      {{ range .Devices.Passkeys }}
+      <tr>
+        <td>
+          <form method="post" action="/account" class="inline-form">
+            <input type="text" name="passkey_name" value="{{ .Name }}" maxlength="60"
+                   aria-label="{{ $.T "account.device" }}">
+            <button class="icon-button" type="submit" name="rename_passkey" value="{{ .ID }}"
+                    title="{{ $.T "manage.save" }}" aria-label="{{ $.T "manage.save" }}">
+              {{ template "icon-pencil" }}
+            </button>
+          </form>
+        </td>
+        <td>
+          {{ if .Synced }}<span class="pill ok">{{ $.T "account.synced_yes" }}</span>
+          {{ else }}<span class="pill">{{ $.T "account.synced_no" }}</span>{{ end }}
+        </td>
+        <td>{{ with .Used }}{{ . }}{{ else }}—{{ end }}</td>
+        <td>
+          <form method="post" action="/account">
+            <button class="icon-button" type="submit" name="remove_passkey" value="{{ .ID }}"
+                    title="{{ $.T "account.remove" }}" aria-label="{{ $.T "account.remove" }}">
+              {{ template "icon-bin" }}
+            </button>
+          </form>
+        </td>
+      </tr>
+      {{ end }}
+    </tbody>
+  </table>
+
+  <div class="prose">
+    <div class="drawer-actions">
+      <button class="button" type="button" data-passkey-action="add">
+        {{ .T "account.add_passkey" }}
+      </button>
+      <form method="post" action="/account">
+        <button class="button secondary" type="submit" name="offer" value="1">
+          {{ .T "account.link_device" }}
+        </button>
+      </form>
+    </div>
+    <p class="section-note">{{ .T "account.link_note" }}</p>
+  </div>
+
+  {{/* A linking offer, live for two minutes. The address is the substance and
+       the code is the convenience: a phone can be pointed at one and cannot
+       reasonably be typed a forty-character token into. */}}
+  {{ if .Link }}
+  <article class="card">
+    <header class="card-header">
+      <h2 class="card-title">{{ .T "account.link_open" }}</h2>
+    </header>
+    <p class="card-text">{{ .T "account.link_open_note" }}</p>
+    {{ if .LinkQR }}
+    <p><img src="{{ .LinkQR }}" alt="{{ .T "account.link_qr_alt" }}" width="320" height="320"></p>
+    {{ end }}
+    <p><code class="receipt-value">{{ .Link }}</code></p>
+    <footer class="card-provenance">
+      <p class="card-source">{{ .T "account.link_warning" }}</p>
+    </footer>
+  </article>
+  {{ end }}
+
+  {{/* The half that makes the whole thing safe. Somebody who tricked a person
+       into scanning their code still has to get that person to approve a
+       browser they do not recognise — so refusing is the case this is really
+       for, and it is the plainer of the two buttons. */}}
+  {{ if .Waiting.Waiting }}
+  <article class="card">
+    <header class="card-header">
+      <h2 class="card-title">{{ .T "account.link_waiting" }}</h2>
+    </header>
+    <p class="card-text">{{ .T "account.link_waiting_note" }}</p>
+    <p><strong>{{ .Waiting.Label }}</strong></p>
+    <p class="section-note">{{ .T "account.link_claim_note" }}</p>
+
+    <div class="drawer-actions">
+      <form method="post" action="/account">
+        <button class="button" type="submit" name="approve" value="{{ .Waiting.ID }}">
+          {{ .T "account.link_approve" }}
+        </button>
+      </form>
+      <form method="post" action="/account">
+        <button class="button secondary" type="submit" name="refuse" value="{{ .Waiting.ID }}">
+          {{ .T "account.link_refuse" }}
+        </button>
+      </form>
+    </div>
+  </article>
+  {{ end }}
+</div>
+
+<div class="prose">
+  <h2>{{ .T "account.sessions" }}</h2>
+  <p class="section-note">{{ .T "account.sessions_note" }}</p>
+</div>
+
+<table class="data-table">
+  <thead>
+    <tr>
+      <th scope="col">{{ .T "account.device" }}</th>
+      <th scope="col">{{ .T "account.last_seen" }}</th>
+      <th scope="col"><span class="visually-hidden">{{ .T "manage.actions" }}</span></th>
+    </tr>
+  </thead>
+  <tbody>
+    {{ range .Devices.Sessions }}
+    <tr>
+      <td>
+        {{ .Label }}
+        {{ if .Current }}<span class="pill ok">{{ $.T "account.this_device" }}</span>{{ end }}
+      </td>
+      <td>{{ .Seen }}</td>
+      <td>
+        {{ if .Current }}
+        <form method="post" action="/account">
+          <button class="button secondary" type="submit" name="signout" value="1">
+            {{ $.T "account.signout" }}
+          </button>
+        </form>
+        {{ else }}
+        <form method="post" action="/account">
+          <button class="icon-button" type="submit" name="revoke" value="{{ .ID }}"
+                  title="{{ $.T "account.revoke" }}" aria-label="{{ $.T "account.revoke" }}">
+            {{ template "icon-bin" }}
+          </button>
+        </form>
+        {{ end }}
+      </td>
+    </tr>
+    {{ end }}
+  </tbody>
+</table>
+
+{{/* Notifications. The list is the channel and this is the tap on the
+     shoulder, which is why the page can say what it cannot promise without
+     the whole feature falling over. */}}
+<div data-push
+     data-push-key="{{ .PushKey }}"
+     data-string-unconfigured="{{ .T "push.unconfigured" }}"
+     data-string-unsupported="{{ .T "push.unsupported" }}"
+     data-string-denied="{{ .T "push.denied" }}"
+     data-string-ios-install="{{ .T "push.ios" }}"
+     data-string-failed="{{ .T "push.failed" }}">
+
+  <div class="prose">
+    <h2>{{ .T "push.title" }}</h2>
+    <p class="section-note">{{ .T "push.note" }}</p>
+    <p class="form-notice" data-push-status hidden></p>
+
+    {{ if .PushConfigured }}
+    <div class="drawer-actions">
+      <button class="button" type="button" data-push-subscribe>{{ .T "push.subscribe" }}</button>
+      <a class="button secondary" href="/notifications">{{ .T "notifications.title" }}</a>
+    </div>
+    {{ else }}
+    <p>{{ .T "push.unconfigured" }}</p>
+    <p><a class="button secondary" href="/notifications">{{ .T "notifications.title" }}</a></p>
+    {{ end }}
+  </div>
+
+  {{ if .Devices.Subscriptions }}
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th scope="col">{{ .T "account.device" }}</th>
+        <th scope="col"><span class="visually-hidden">{{ .T "manage.actions" }}</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      {{ range .Devices.Subscriptions }}
+      <tr>
+        <td>{{ .Label }}</td>
+        <td>
+          <form method="post" action="/account">
+            <button class="icon-button" type="submit" name="unsubscribe" value="{{ .ID }}"
+                    title="{{ $.T "push.stop" }}" aria-label="{{ $.T "push.stop" }}">
+              {{ template "icon-bin" }}
+            </button>
+          </form>
+        </td>
+      </tr>
+      {{ end }}
+    </tbody>
+  </table>
+  {{ end }}
+</div>
+
+<div class="prose">
+  <h2>{{ .T "account.recovery" }}</h2>
+  <p>{{ .T "account.recovery_note" }}</p>
+  <p class="section-note">
+    {{ .T "account.recovery_left" }} <strong>{{ .Account.RecoveryCodesLeft }}</strong>
+  </p>
+  <form method="post" action="/account">
+    <button class="button secondary" type="submit" name="codes" value="1">
+      {{ .T "account.recovery_new" }}
+    </button>
+  </form>
+  <p class="section-note">{{ .T "account.recovery_replace" }}</p>
+</div>
+
+{{/* Erasure. Its own section at the bottom, behind a confirmation, because it
+     is the one control here that cannot be undone. What it does is said
+     plainly: the identity goes, the participation stays with the reference
+     removed, so a group's history stays accurate and the person becomes
+     unidentifiable. */}}
+<div class="prose">
+  <h2>{{ .T "account.delete_title" }}</h2>
+  <p>{{ .T "account.delete_note" }}</p>
+  <p class="section-note">{{ .T "account.delete_keeps" }}</p>
+
+  <details>
+    <summary>{{ .T "account.delete_open" }}</summary>
+    <form method="post" action="/account">
+      <p><label>
+        <input type="checkbox" name="understood" required>
+        {{ .T "account.delete_confirm" }}
+      </label></p>
+      <button class="button danger" type="submit" name="delete" value="1">
+        {{ .T "account.delete_button" }}
+      </button>
+    </form>
+  </details>
+</div>
+
+<script src="/static/passkey.js?v={{ .AssetVersion }}" defer></script>
+<script src="/static/push.js?v={{ .AssetVersion }}" defer></script>
+{{end}}

@@ -1,0 +1,86 @@
+{{define "content"}}
+{{/* The register is the front page, so this has to do what a front page
+     does: say what the thing is, say why it is worth reading, and offer the
+     way in — before the map and the filters, which are for somebody who has
+     already decided to stay.
+
+     The link to /about is its own string rather than markup inside a
+     sentence. Every translated string is escaped, deliberately and with no
+     `safe` helper anywhere, so a link cannot live inside one — and splitting
+     at a clause boundary lets each language order its own sentences instead
+     of inheriting French word order. */}}
+<div class="prose">
+  <h1>{{ .T "register.title" }}</h1>
+  <p class="lede">{{ .T "register.lede" }}</p>
+  <p>{{ .T "register.intro" }} <a href="/about">{{ .T "register.intro_link" }}</a></p>
+  <a class="button" href="/doleance">{{ .T "cta.write" }}</a>
+  <p class="section-note">{{ .T "register.map_hint" }}</p>
+</div>
+
+<div class="register-filters prose">
+  {{ template "subject-filter" dict
+      "ID" "subjects"
+      "Subjects" .Subjects
+      "Label" (.T "register.filter_subjects")
+      "Hint" (.T "register.filter_and")
+      "Placeholder" (.T "filter.any_subject")
+      "Empty" (.T "filter.no_subjects") }}
+</div>
+
+<div id="map" class="register-map" data-country="{{ .Country }}"></div>
+
+<div class="register-bar">
+  <p id="count" class="section-note" role="status" aria-live="polite"></p>
+</div>
+
+{{/* One list, not two sections. A doléance written this week and a passage
+     from 1789 are the same act performed twice, which is the claim this whole
+     project rests on — and filing the past under its own heading would say the
+     opposite of that while appearing to agree. */}}
+<div id="results" class="grid">
+  {{ range .Entries }}
+  {{ if .Message }}{{ template "message-card" dict "Card" .Message "Page" $ }}
+  {{ else }}{{ template "historical-card" dict "Card" .Historical "Page" $ }}{{ end }}
+  {{ end }}
+</div>
+
+<p id="empty" class="empty"{{ if .HasMessages }} hidden{{ end }}>{{ .T "register.empty" }}</p>
+
+<noscript>
+  <p class="section-note">{{ .T "register.noscript" }}</p>
+</noscript>
+
+<script nonce="{{ .Nonce }}">
+  window.registerStrings = {
+    anonymous: {{ .T "card.anonymous" }},
+    more: {{ .T "card.more" }},
+    like: {{ .T "card.like" }},
+    likeHint: {{ .T "card.like_hint" }},
+    permalink: {{ .T "card.permalink" }},
+    report: {{ .T "card.report" }},
+    reportHint: {{ .T "card.report_hint" }},
+    verified: {{ .T "card.verified" }},
+    {{/* The passage card's own words, for the cards this script draws when
+         the map filters the list. */}}
+    placeholder: {{ .T "card.placeholder" }},
+    translated: {{ .T "card.translated" }},
+    likeHintPast: {{ .T "card.like_hint_past" }},
+    verifiedHint: {{ .T "card.verified_hint" }},
+    keep: {{ .T "card.keep" }},
+    kept: {{ .T "card.kept" }},
+    keepHint: {{ .T "card.keep_hint" }},
+    releaseHint: {{ .T "card.release_hint" }},
+    {{/* Whether to draw the keep control at all. From the cookie, like the
+         navigation: it costs no call and it decides only what is offered,
+         never what anybody may do — the backend settles that. */}}
+    signedIn: {{ .SignedIn }},
+    counting: {{ .T "register.counting" }},
+    count: {{ .T "register.count" }},
+    countOne: {{ .T "register.count_one" }},
+    empty: {{ .T "register.empty" }},
+    emptyHere: {{ .T "register.empty_here" }},
+    failed: {{ .T "register.failed" }}
+  };
+</script>
+<script src="/static/register.js?v={{ .AssetVersion }}"></script>
+{{end}}

@@ -1,0 +1,32 @@
+{{define "content"}}
+<div class="prose">
+  <h1>{{ .T "bookmarks.title" }}</h1>
+  <p class="lede">{{ .T "bookmarks.lede" }}</p>
+  {{/* Said on the page rather than only in the model: this list is the
+       reader's own, nobody else can see it, and it is theirs to empty. That
+       is the whole difference between keeping a text and the "me too" count
+       beside it, which belongs to the person who wrote the doléance and
+       names nobody at all. */}}
+  <p class="section-note">{{ .T "bookmarks.note" }}</p>
+</div>
+
+{{ if .Kept }}
+<div class="grid">
+  {{ range .Kept }}
+  {{ if .Message }}
+    {{ template "message-card" dict "Card" .Message "Page" $ }}
+  {{ else if .Historical }}
+    {{ template "historical-card" dict "Card" .Historical "Page" $ }}
+  {{ end }}
+  {{ end }}
+</div>
+{{ else }}
+<div class="prose">
+  <p>{{ .T "bookmarks.empty" }}</p>
+  <p class="section-note">
+    <a href="/register">{{ .T "nav.register" }}</a> &middot;
+    <a href="/voices">{{ .T "nav.voices" }}</a>
+  </p>
+</div>
+{{ end }}
+{{end}}

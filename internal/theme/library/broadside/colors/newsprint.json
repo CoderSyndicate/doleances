@@ -1,0 +1,38 @@
+{
+  "light": {
+    "bg": {"$type":"color","$value":"#f2f0ea"},
+    "surface": {"$type":"color","$value":"#fbfaf7"},
+    "border": {"$type":"color","$value":"#cfcabd"},
+    "text": {"$type":"color","$value":"#1b1a17"},
+    "text-muted": {"$type":"color","$value":"#5d594f"},
+    "accent": {"$type":"color","$value":"#1b1a17"},
+    "accent-deep": {"$type":"color","$value":"#000000"},
+    "on-accent": {"$type":"color","$value":"#fbfaf7"},
+    "stripe-light": {"$type":"color","$value":"#1b1a17"},
+    "stripe-dark": {"$type":"color","$value":"#cfcabd"},
+    "paper": {"$type":"color","$value":"#ece7da"},
+    "paper-text": {"$type":"color","$value":"#22201b"},
+    "paper-border": {"$type":"color","$value":"#cbc4b2"},
+    "error": {"$type":"color","$value":"#9b1c14"},
+    "warn": {"$type":"color","$value":"#7a5200"},
+    "good": {"$type":"color","$value":"#245c33"}
+  },
+  "dark": {
+    "bg": {"$type":"color","$value":"#15140f"},
+    "surface": {"$type":"color","$value":"#201e18"},
+    "border": {"$type":"color","$value":"#3a3730"},
+    "text": {"$type":"color","$value":"#f2f0ea"},
+    "text-muted": {"$type":"color","$value":"#a5a093"},
+    "accent": {"$type":"color","$value":"#f2f0ea"},
+    "accent-deep": {"$type":"color","$value":"#cfcabd"},
+    "on-accent": {"$type":"color","$value":"#15140f"},
+    "stripe-light": {"$type":"color","$value":"#f2f0ea"},
+    "stripe-dark": {"$type":"color","$value":"#3a3730"},
+    "paper": {"$type":"color","$value":"#24221b"},
+    "paper-text": {"$type":"color","$value":"#e6e0d0"},
+    "paper-border": {"$type":"color","$value":"#403b30"},
+    "error": {"$type":"color","$value":"#f08b82"},
+    "warn": {"$type":"color","$value":"#e0b25a"},
+    "good": {"$type":"color","$value":"#7fc496"}
+  }
+}

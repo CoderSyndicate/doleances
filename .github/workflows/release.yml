@@ -1,0 +1,181 @@
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  CGO_ENABLED: "0"
+  REGISTRY: ghcr.io
+
+jobs:
+  binaries:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        service: [backend, console, frontend]
+        target:
+          - { os: linux,  arch: amd64 }
+          - { os: linux,  arch: arm64 }
+          - { os: darwin, arch: amd64 }
+          - { os: darwin, arch: arm64 }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+
+      - name: Resolve version
+        id: version
+        run: |
+          echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+          echo "commit=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+
+      - name: Build ${{ matrix.service }} (${{ matrix.target.os }}/${{ matrix.target.arch }})
+        env:
+          GOOS: ${{ matrix.target.os }}
+          GOARCH: ${{ matrix.target.arch }}
+        run: |
+          out="dist/${GOOS}-${GOARCH}"
+          mkdir -p "$out"
+          go build -trimpath \
+            -ldflags "-s -w -X main.version=${{ steps.version.outputs.version }} -X main.commit=${{ steps.version.outputs.commit }}" \
+            -o "$out/${{ matrix.service }}" \
+            ./cmd/${{ matrix.service }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: bin-${{ matrix.service }}-${{ matrix.target.os }}-${{ matrix.target.arch }}
+          path: dist/
+          retention-days: 7
+
+  images:
+    needs: binaries
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write
+    strategy:
+      fail-fast: false
+      matrix:
+        service: [backend, console, frontend]
+    steps:
+      - uses: actions/checkout@v4
+
+      # Only the linux artifacts are needed for images; buildx picks the right
+      # one per platform via TARGETOS/TARGETARCH.
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: bin-${{ matrix.service }}-linux-*
+          path: dist-download
+          merge-multiple: true
+
+      - name: Stage binaries for the build context
+        run: |
+          mkdir -p dist
+          cp -r dist-download/* dist/
+          chmod +x dist/*/${{ matrix.service }}
+          find dist -type f -printf '%p %s\n'
+
+      - uses: docker/setup-qemu-action@v3
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.service }}
+          # The commit is tagged twice, and both earn their place.
+          #
+          # `sha-<full>` is the conventional immutable handle: unambiguous, and
+          # the one a tool should pin to.
+          #
+          # The bare short hash is the same seven characters the binary inside
+          # reports as `main.commit` — the ldflags in the binaries job cut
+          # `GITHUB_SHA` to the same length from the same value. So a service
+          # answering `--version` in production names the image it came from,
+          # with no lookup and no second convention to remember. Without it the
+          # two halves of the same build are written differently and matching
+          # them is a manual step somebody gets wrong at the wrong moment.
+          #
+          # `prefix=` is deliberately empty: the default is `sha-`, and the
+          # action only applies it when the attribute is absent entirely.
+          #
+          # Both sides are seven characters by coincidence of defaults rather
+          # than by agreement — `format=short` takes seven unless
+          # `DOCKER_METADATA_SHORT_SHA_LENGTH` says otherwise, and the ldflags
+          # cut seven. Setting that variable without changing the ldflags is
+          # the one way to make the tag and the binary disagree, which would be
+          # invisible until somebody tried to match them.
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=sha,format=long
+            type=sha,format=short,prefix=
+
+      - id: push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: build/docker/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          build-args: SERVICE=${{ matrix.service }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          push: true
+          provenance: mode=max
+          sbom: true
+
+      - name: Attest build provenance
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-name: ${{ env.REGISTRY }}/${{ github.repository }}/${{ matrix.service }}
+          subject-digest: ${{ steps.push.outputs.digest }}
+          push-to-registry: true
+
+  release:
+    needs: binaries
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: bin-*
+          path: dist-download
+          merge-multiple: true
+
+      - name: Package archives and checksums
+        run: |
+          mkdir -p release
+          for dir in dist-download/*/; do
+            platform="$(basename "$dir")"
+            tar -czf "release/doleances-${GITHUB_REF_NAME}-${platform}.tar.gz" -C "$dir" .
+          done
+          (cd release && sha256sum *.tar.gz > SHA256SUMS)
+          ls -l release
+
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            release/*.tar.gz
+            release/SHA256SUMS
+          generate_release_notes: true

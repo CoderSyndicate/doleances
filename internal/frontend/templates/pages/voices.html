@@ -1,0 +1,11 @@
+{{define "content"}}
+<div class="prose">
+  <h1>{{ .T "voices.title" }}</h1>
+  <p class="lede">{{ .T "voices.lede" }}</p>
+</div>
+
+{{ $page := . }}
+<div class="grid">
+  {{ range .Texts }}{{ template "historical-card" dict "Card" . "Page" $page }}{{ end }}
+</div>
+{{end}}

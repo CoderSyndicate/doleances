@@ -1,0 +1,24 @@
+{{define "content"}}
+<div class="prose">
+  <h1>{{ .T "audit.title" }}</h1>
+  <p class="lede">{{ .T "audit.lede" }}</p>
+  <p class="section-note">{{ .T "audit.append_only" }}</p>
+</div>
+
+{{ if .Entries }}
+<div class="grid">
+  {{ range .Entries }}
+  <article class="card">
+    <div class="card-meta">
+      <span>{{ .At }}</span>
+      <span>{{ .Actor }}</span>
+      <span>{{ .Action }}</span>
+    </div>
+    <p class="card-text">{{ .Reason }}</p>
+  </article>
+  {{ end }}
+</div>
+{{ else }}
+<p class="empty">{{ .T "audit.empty" }}</p>
+{{ end }}
+{{end}}

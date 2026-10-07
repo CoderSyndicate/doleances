@@ -1,0 +1,44 @@
+{{define "content"}}
+{{ if .Failed }}
+<div class="prose">
+  <h1>{{ .T "account.link_failed_title" }}</h1>
+  {{/* Expired, already used and never issued are one message. Telling them
+       apart would let somebody probe which codes had been real. */}}
+  <p class="lede">{{ .T "account.link_failed" }}</p>
+  <p><a class="button" href="/account/signin">{{ .T "account.signin" }}</a></p>
+</div>
+{{ else }}
+<div class="prose">
+  <h1>{{ .T "account.link_title" }}</h1>
+  <p class="lede">{{ .T "account.link_lede" }}</p>
+</div>
+
+{{/* The new device's half of the exchange, and it is deliberately passive: it
+     claims the code and then waits. Nothing is attached to the account until
+     the *other* device approves what claimed it, which is what stops a relayed
+     code — somebody who tricked a person into scanning theirs still has to get
+     that person to approve a browser they do not recognise. */}}
+<div data-passkey
+     data-string-unsupported="{{ .T "account.unsupported" }}"
+     data-string-cancelled="{{ .T "account.cancelled" }}"
+     data-string-already="{{ .T "account.already" }}"
+     data-string-failed="{{ .T "account.failed" }}"
+     data-string-waiting="{{ .T "account.link_pending" }}"
+     data-string-approved="{{ .T "account.link_approved" }}"
+     data-string-expired="{{ .T "account.link_expired" }}">
+
+  <p class="form-error" role="alert" data-passkey-error hidden></p>
+  <p class="form-error" data-passkey-unsupported hidden>{{ .T "account.unsupported" }}</p>
+
+  <article class="card">
+    <p class="card-text" data-link-status>{{ .T "account.link_claiming" }}</p>
+    <div data-link-token="{{ .Token }}" hidden></div>
+    <footer class="card-provenance">
+      <p class="card-source">{{ .T "account.link_approve_note" }}</p>
+    </footer>
+  </article>
+</div>
+
+<script src="/static/passkey.js?v={{ .AssetVersion }}" defer></script>
+{{ end }}
+{{end}}

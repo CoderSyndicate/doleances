@@ -1,0 +1,59 @@
+{{define "content"}}
+<div class="prose">
+  <h1>{{ .T "propose.title" }}</h1>
+  <p class="lede">{{ .T "propose.lede" }}</p>
+
+  {{ if .Error }}<p class="form-error" role="alert">{{ .Error }}</p>{{ end }}
+
+  <form method="post" action="/groups/new">
+  <div class="split">
+  <div class="prose">
+    <label for="name">{{ .T "propose.name" }}
+      <span class="hint">{{ .T "propose.name_hint" }}</span>
+    </label>
+    <input type="text" id="name" name="name" maxlength="120" required autocomplete="off"
+           data-name-check="/api/groups/available"
+           data-taken="{{ .T "propose.name_taken" }}"
+           data-free="{{ .T "propose.name_free" }}"
+           value="{{ .Draft.Name }}">
+    <p class="name-status" id="name-status" role="status" aria-live="polite"></p>
+
+    <label for="description">{{ .T "propose.description" }}
+      <span class="hint">{{ .T "propose.description_hint" }}</span>
+    </label>
+    <textarea id="description" name="description" maxlength="2000">{{ .Draft.Description }}</textarea>
+
+    {{/* There is no contact address to ask for. A group used to prove a
+         mailbox answered before it entered the pipeline, because the address
+         *was* the identity; whoever is filling this in has proved themselves
+         with a passkey and carries no address to prove. What they get instead
+         is the group: they are its first admin, and nothing about that is
+         permanent. */}}
+    <p class="section-note">{{ .T "propose.admin_note" }}</p>
+  </div>
+
+  {{/* The map takes the rest of the page rather than a reading measure: it is
+       the one field somebody has to be able to aim, and a pin dropped on a
+       thumbnail is a pin dropped roughly. */}}
+  <div class="split-aside">
+    <label>{{ .T "propose.location" }}
+      <span class="hint">{{ .T "propose.location_hint" }}</span>
+    </label>
+    <div id="map" data-country="{{ .Country }}" data-pick="true"></div>
+    <input type="hidden" id="latitude" name="latitude" data-role="latitude" value="{{ with .Draft.Latitude }}{{ . }}{{ end }}">
+    <input type="hidden" id="longitude" name="longitude" data-role="longitude" value="{{ with .Draft.Longitude }}{{ . }}{{ end }}">
+    <input type="hidden" id="place" name="place" value="{{ .Draft.Place }}">
+    <input type="hidden" id="country" name="country" value="{{ .Draft.Country }}">
+    <input type="hidden" id="zoom" name="zoom" data-role="zoom" value="{{ with .Draft.Zoom }}{{ . }}{{ end }}">
+  </div>
+  </div>
+
+  <div class="prose">
+    <button class="button" type="submit">{{ .T "propose.submit" }}</button>
+  </div>
+  </form>
+
+  <p class="section-note">{{ .T "propose.review_note" }}</p>
+  <p class="section-note">{{ .T "around.attribution" }}</p>
+</div>
+{{end}}

@@ -1,0 +1,74 @@
+{{define "content"}}
+<div class="prose">
+  <h1>{{ .T "dropped.title" }}</h1>
+  <p class="lede">{{ .T "dropped.lede" }}</p>
+  <p>{{ .T "dropped.intro" }}</p>
+  {{ if .Hours }}
+  <p class="section-note">{{ .T "dropped.retention" }}</p>
+  {{ end }}
+</div>
+
+{{ if .Cards }}
+<div class="grid">
+  {{ $page := . }}
+  {{ range .Cards }}
+  <article class="card dropped-card">
+    <div class="card-meta">
+      <span>{{ .Date }}</span>
+      <span class="dropped-reason">{{ .Reason }}</span>
+    </div>
+
+    {{ if .Withheld }}
+    {{/* No words at all. The two categories that reach this are refusals
+         *about publication* — somebody who is not the author is named, or it
+         is an attack rather than a text — so reproducing them here would do
+         the thing the refusal prevented. */}}
+    <p class="card-text dropped-withheld">{{ .WithheldWhy }}</p>
+
+    {{ else if .Hidden }}
+    {{/* Shown, but never by surprise. <details> and not a script, like every
+         other disclosure here, so it opens with JavaScript off. */}}
+    <details class="dropped-reveal">
+      <summary>{{ $page.T "dropped.reveal" }}</summary>
+      <p class="card-text">{{ .Text }}</p>
+    </details>
+
+    {{ else }}
+    <p class="card-text">{{ .Text }}</p>
+    {{ end }}
+
+    <footer class="card-actions">
+      {{/* A form, so it works with no script — the same shape as "me too".
+           What it does is move this to the top of a curator's page; it
+           overturns nothing, and the text beside it says so. */}}
+      <form method="post" action="/dropped/{{ .ID }}/plea">
+        <button class="card-action plea" type="submit"
+                data-tip="{{ $page.T "dropped.plea_hint" }}">
+          {{ template "icon-flag" }}<span class="like-count">{{ .Pleas }}</span>
+          <span class="visually-hidden">{{ $page.T "dropped.plea" }}</span>
+        </button>
+      </form>
+    </footer>
+  </article>
+  {{ end }}
+</div>
+{{/* Links rather than buttons: this page carries no script, and a pager that
+     needed one would be a page somebody could not finish reading. */}}
+{{ if or .HasPrev .HasNext }}
+<nav class="pager" aria-label="{{ .T "dropped.pages" }}">
+  {{ if .HasPrev }}
+  <a class="button small secondary" href="/dropped?page={{ .PrevPage }}"
+     rel="prev">&lsaquo;</a>
+  {{ end }}
+  <span class="corpus-position">{{ .Page }}</span>
+  {{ if .HasNext }}
+  <a class="button small secondary" href="/dropped?page={{ .NextPage }}"
+     rel="next">&rsaquo;</a>
+  {{ end }}
+</nav>
+{{ end }}
+
+{{ else }}
+<p class="empty">{{ .T "dropped.empty" }}</p>
+{{ end }}
+{{end}}

@@ -1,0 +1,91 @@
+# A local doléances installation: the backend, the public frontend and the
+# PostgreSQL database behind them. See running.md beside this file.
+#
+#   docker compose -f docs/docker-compose.yml up -d
+#
+# The console is opt-in, behind the "console" profile, and runs with
+# --development: authentication OFF, for a machine nobody else can reach.
+#
+#   docker compose -f docs/docker-compose.yml --profile console up -d
+#
+# A real deployment signs curators in through Authentik instead; see
+# authentik-console-auth.md.
+
+name: doleances
+
+services:
+  database:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: doleances
+      POSTGRES_USER: doleances
+      POSTGRES_PASSWORD: ${DOLEANCES_DB_PASSWORD:-doleances}
+    volumes:
+      - database:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U doleances -d doleances"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+
+  backend:
+    image: ghcr.io/codersyndicate/doleances/backend:${DOLEANCES_TAG:-latest}
+    depends_on:
+      database:
+        condition: service_healthy
+    environment:
+      DOLEANCES_DATABASE_DRIVER: postgres
+      DOLEANCES_DATABASE_DSN: postgres://doleances:${DOLEANCES_DB_PASSWORD:-doleances}@database:5432/doleances?sslmode=disable
+      # Snapshots are written here. /home/nonroot is the one directory the
+      # distroless image gives its user, so a named volume mounted on it is
+      # writable by uid 65532 without any chown.
+      DOLEANCES_STORAGE_URL: file:///home/nonroot/storage
+      # Passkeys are bound to this host for ever — set it to the real public
+      # URL before anybody makes an account.
+      DOLEANCES_SITE_URL: ${DOLEANCES_SITE_URL:-http://localhost:8201}
+      # Optional. Without a model, new submissions wait as pending; everything
+      # already published, and everything restored, is served normally.
+      DOLEANCES_LLM_BASE_URL: ${DOLEANCES_LLM_BASE_URL:-}
+      DOLEANCES_LLM_API_KEY: ${DOLEANCES_LLM_API_KEY:-}
+      # Optional. Encrypts stored credentials; generate with `openssl rand -base64 32`.
+      DOLEANCES_SETTINGS_KEY: ${DOLEANCES_SETTINGS_KEY:-}
+    volumes:
+      - backend:/home/nonroot
+    # The backend is never public. It is published on loopback only, so the
+    # snapshot restore can be posted from this machine and from nowhere else.
+    ports:
+      - "127.0.0.1:7300:7300"
+    read_only: true
+    restart: unless-stopped
+
+  frontend:
+    image: ghcr.io/codersyndicate/doleances/frontend:${DOLEANCES_TAG:-latest}
+    depends_on:
+      - backend
+    environment:
+      DOLEANCES_BACKEND_URL: http://backend:7300
+      DOLEANCES_SITE_URL: ${DOLEANCES_SITE_URL:-http://localhost:8201}
+    ports:
+      - "8201:8201"
+    read_only: true
+    restart: unless-stopped
+
+  console:
+    image: ghcr.io/codersyndicate/doleances/console:${DOLEANCES_TAG:-latest}
+    profiles: ["console"]
+    depends_on:
+      - backend
+    environment:
+      DOLEANCES_BACKEND_URL: http://backend:7300
+      # No sign-in at all: whoever reaches this port is a curator and an admin.
+      # It warns on every startup. Never on a machine others can reach.
+      DOLEANCES_DEVELOPMENT: "true"
+    ports:
+      - "127.0.0.1:8200:8200"
+    read_only: true
+    restart: unless-stopped
+
+volumes:
+  database:
+  backend:

@@ -1,0 +1,49 @@
+{{define "content"}}
+<div class="prose">
+  <h1>{{ .T "theme.title" }}</h1>
+  <p class="lede">{{ .T "theme.lede" }}</p>
+  <p class="section-note">{{ .T "theme.roundtrip" }}</p>
+</div>
+
+<div class="theme-bar">
+  <label class="button" title="{{ .T "theme.upload_hint" }}">
+    {{ .T "theme.upload" }}
+    <input id="import" type="file" accept=".zip,application/zip" hidden>
+  </label>
+  <a class="button secondary" href="/theme/download/built-in">{{ .T "theme.download_template" }}</a>
+</div>
+
+<p id="status" class="section-note" role="status" aria-live="polite"></p>
+
+<div id="themes" class="themes"></div>
+
+<noscript>
+  <p class="empty">{{ .T "theme.noscript" }}</p>
+</noscript>
+
+<script nonce="{{ .Nonce }}">
+  window.themeStrings = {
+    active: {{ .T "theme.badge_active" }},
+    builtIn: {{ .T "theme.badge_builtin" }},
+    use: {{ .T "theme.use" }},
+    download: {{ .T "theme.download" }},
+    remove: {{ .T "theme.delete" }},
+    confirmDelete: {{ .T "theme.confirm_delete" }},
+    applying: {{ .T "theme.applying" }},
+    applied: {{ .T "theme.applied" }},
+    uploading: {{ .T "theme.uploading" }},
+    uploaded: {{ .T "theme.uploaded" }},
+    failed: {{ .T "theme.failed" }},
+    empty: {{ .T "theme.empty" }},
+    images: {{ .T "theme.images" }},
+    imageCustom: {{ .T "theme.image_custom" }},
+    imageDefault: {{ .T "theme.image_default" }},
+    imageReplace: {{ .T "theme.image_replace" }},
+    imageReset: {{ .T "theme.image_reset" }},
+    colour: {{ .T "theme.colour" }},
+    builtInNoAssets: {{ .T "theme.builtin_no_assets" }},
+    packageFile: {{ .T "theme.package_file" }}
+  };
+</script>
+<script src="/static/manager.js?v={{ .AssetVersion }}"></script>
+{{end}}

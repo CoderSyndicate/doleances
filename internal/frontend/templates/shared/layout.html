@@ -1,0 +1,686 @@
+{{define "layout"}}<!DOCTYPE html>
+<html lang="{{ .Lang }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ .T .Title }} — {{ .T "site.name" }}</title>
+  {{/* Three declarations for one icon, because browsers do not agree.
+       The SVG is the source and scales to anything; the .ico is what Safari
+       actually draws, and the touch icon is what iOS puts on a home screen.
+       The last two are rastered from the first at request time. */}}
+  <link rel="icon" type="image/svg+xml" href="/theme/assets/mark">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico" sizes="32x32">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <!-- The map's own stylesheets come first, so our styles override them. The
+       cluster plugin ships a fixed blue-green for its counts; loaded after
+       ours it would win, and the map would be the one part of the page that
+       ignores the theme.
+
+       Served from this origin rather than a CDN. See
+       static/third-party/leaflet/PROVENANCE.md: a CDN sees the address of every
+       reader, and since accounts became passkeys it would also be foreign
+       script on the origin where a session cookie lives. -->
+  {{ if .UsesMap }}
+  <link rel="stylesheet" href="/static/third-party/leaflet/leaflet.css?v={{ .AssetVersion }}">
+  <link rel="stylesheet" href="/static/third-party/leaflet/MarkerCluster.css?v={{ .AssetVersion }}">
+  <link rel="stylesheet" href="/static/third-party/leaflet/MarkerCluster.Default.css?v={{ .AssetVersion }}">
+  {{ end }}
+  <link rel="stylesheet" href="/static/tokens.css?v={{ .AssetVersion }}">
+  <link rel="stylesheet" href="/static/base.css?v={{ .AssetVersion }}">
+  <!-- The active theme, loaded after the defaults so it overrides only what it
+       declares. If it fails to load, the built-in palette still applies. -->
+  <link rel="stylesheet" href="/theme/tokens.css">
+  <!-- Runs synchronously so data-theme is set before the first paint: loading
+       this asynchronously is what produces a flash of the wrong theme. -->
+  <script nonce="{{ .Nonce }}">
+    (function () {
+      try {
+        var t = localStorage.getItem("doleances-theme");
+        if (t === "light" || t === "dark") {
+          document.documentElement.setAttribute("data-theme", t);
+        }
+      } catch (e) {}
+    })();
+  </script>
+</head>
+<body>
+  <header class="masthead">
+    <div class="masthead-inner">
+      <div class="masthead-identity">
+        <img class="logo" src="/theme/assets/logo" alt="">
+        <div>
+        <a class="wordmark" href="/">{{ .T "site.name" }}</a>
+        <div class="tagline">{{ .T "site.tagline" }}</div>
+        </div>
+      </div>
+      <div class="masthead-controls">
+        <button id="theme-toggle" class="theme-toggle" type="button"
+                title="{{ .T "nav.theme_toggle" }}" aria-label="{{ .T "nav.theme_toggle" }}">☾</button>
+      {{/* The language selector: a flag, and the rest behind it.
+           It shows no text on purpose, so it costs the masthead one control
+           instead of one per language — but a picture is not a name, so every
+           entry carries its language's own endonym in .visually-hidden, which
+           is what a screen reader reads and what the title attribute shows.
+           <details> rather than a script, like every other disclosure here. */}}
+      <details class="languages">
+        <summary title="{{ .T "nav.language" }}">
+          <img src="/flags/{{ .Lang }}.svg" alt="" width="24" height="16">
+          <span class="visually-hidden">{{ .T "nav.language" }}: {{ languageName .Lang }}</span>
+        </summary>
+        <ul class="languages-menu">
+          {{ $lang := .Lang }}
+          {{ range .Languages }}
+          <li>
+            <a href="?lang={{ . }}" hreflang="{{ . }}" title="{{ languageName . }}"
+               aria-current="{{ if eq . $lang }}true{{ else }}false{{ end }}">
+              <img src="/flags/{{ . }}.svg" alt="" width="24" height="16">
+              <span class="visually-hidden">{{ languageName . }}</span>
+            </a>
+          </li>
+          {{ end }}
+        </ul>
+      </details>
+      </div>
+    </div>
+  </header>
+  <div class="stripe" aria-hidden="true"></div>
+
+  <nav class="nav" aria-label="{{ .T "nav.main" }}">
+    <div class="nav-inner">
+      {{/* The register is first because it is the root: this project is a
+           register, and the page that explains why comes after the thing it
+           is explaining. */}}
+      {{ template "navlink" dict "Page" . "Href" "/" "Key" "nav.register" }}
+      {{ template "navlink" dict "Page" . "Href" "/doleance" "Key" "nav.write" }}
+      {{ if .Groups }}
+      {{ template "navlink" dict "Page" . "Href" "/around-me" "Key" "nav.around" }}
+      {{ end }}
+      {{ template "navlink" dict "Page" . "Href" "/voices" "Key" "nav.voices" }}
+      {{ template "navlink" dict "Page" . "Href" "/about" "Key" "nav.about" }}
+      {{/* Outside the groups switch. A register that only collects doléances
+           has no use for an account — nothing else needs a session — but a
+           link that 404s because of a flag about groups would be a confusing
+           way to find that out.
+
+           What it says depends on the cookie and on nothing else: no call to
+           the backend, on any page. So a reader whose session has quietly
+           expired is still offered "sign out", and pressing it is still the
+           right thing — the cookie goes, and the backend refusing a token it
+           has already forgotten changes nothing. */}}
+      {{ if .SignedIn }}
+      {{ template "navlink" dict "Page" . "Href" "/account" "Key" "nav.account" }}
+      {{/* A form, because signing out is a change. A link would be followed by
+           every prefetcher and link scanner that touches the page, and the
+           first somebody would know of it is finding themselves signed out. */}}
+      <form class="nav-form" method="post" action="/account">
+        <button class="nav-button" type="submit" name="signout" value="1">
+          {{ .T "nav.signout" }}
+        </button>
+      </form>
+      {{ else }}
+      {{ template "navlink" dict "Page" . "Href" "/account/signin" "Key" "nav.signin" }}
+      {{ end }}
+    </div>
+  </nav>
+
+  <main>
+    {{ template "content" . }}
+  </main>
+
+  <div class="stripe" aria-hidden="true"></div>
+  {{/* A section rather than three loose lines under a rule.
+       What it carries is the project's own claim about itself — that the
+       register does not depend on the people running it — and a claim like
+       that has to be checkable or it is decoration. So it says what is open,
+       and then hands over the two addresses where somebody can go and check:
+       the whole register as a file, and the software that served it. */}}
+  {{ if not .InlinesFooter }}
+  <footer>
+    <div class="footer-inner">
+      <h2>{{ .T "footer.title" }}</h2>
+      {{ template "openness" . }}
+    </div>
+  </footer>
+  {{ end }}
+
+  {{ if .UsesMap }}
+  <script src="/static/third-party/leaflet/leaflet.js?v={{ .AssetVersion }}"></script>
+  <script src="/static/third-party/leaflet/leaflet.markercluster.js?v={{ .AssetVersion }}"></script>
+  <script src="/static/map.js?v={{ .AssetVersion }}"></script>
+  {{ end }}
+  {{/* Loaded on every page: it no-ops where there is no filter, and every
+       page that has one gets the same behaviour without remembering to ask. */}}
+  <script src="/static/subjectfilter.js?v={{ .AssetVersion }}"></script>
+  {{/* Same arrangement: it no-ops where there is no name field. */}}
+  <script src="/static/groupname.js?v={{ .AssetVersion }}"></script>
+  {{/* Remembers, in this browser, which doléances it already said "me too" to.
+       Everything works without it; this only adds the pressed state. */}}
+  <script src="/static/like.js?v={{ .AssetVersion }}"></script>
+  <script src="/static/theme.js?v={{ .AssetVersion }}"></script>
+</body>
+</html>{{end}}
+
+{{/* Icons are inline SVG rather than a font or an image: they inherit
+     currentColor, so they follow the theme without a second palette, and they
+     cost no request. aria-hidden because the control around them carries the
+     label — an icon announced twice is worse than one announced once. */}}
+{{define "icon-pencil"}}<svg class="icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false"
+  fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+><path d="M11.4 2.6a1.7 1.7 0 0 1 2.4 2.4L6 12.8l-3.2 1 1-3.2 7.6-8z"/><path d="M10.3 3.7 12.7 6.1"/></svg>{{end}}
+
+{{define "icon-bin"}}<svg class="icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false"
+  fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+><path d="M2.75 4h10.5"/><path d="M6.25 4V2.75h3.5V4"/><path d="M4.25 4l.6 9.25h6.3L11.75 4"/><path d="M6.6 6.5v4.5M9.4 6.5v4.5"/></svg>{{end}}
+
+{{define "icon-heart"}}<svg class="icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false"
+  fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+><path d="M8 13.3S2.5 10 2.5 6.2a2.9 2.9 0 0 1 5.5-1.4 2.9 2.9 0 0 1 5.5 1.4C13.5 10 8 13.3 8 13.3z"/></svg>{{end}}
+
+{{define "icon-link"}}<svg class="icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false"
+  fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+><path d="M6.6 9.4a2.6 2.6 0 0 0 3.8 0l2-2a2.7 2.7 0 0 0-3.8-3.8l-1 1"/><path d="M9.4 6.6a2.6 2.6 0 0 0-3.8 0l-2 2a2.7 2.7 0 0 0 3.8 3.8l1-1"/></svg>{{end}}
+
+{{/* The report flag, and the mark that replaces it.
+
+     A flag rather than an exclamation or a crossed circle: it asks somebody to
+     look, which is all a report does here — the text is untouched and a curator
+     decides. An alarm icon would promise a verdict this control cannot give. */}}
+{{define "icon-flag"}}<svg class="icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false"
+  fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+><path d="M4 14V2.5h8l-1.5 3L12 8.5H4"/></svg>{{end}}
+
+{{define "icon-check"}}<svg class="icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false"
+  fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+><path d="M3 8.5l3.5 3.5L13 5"/></svg>{{end}}
+
+{{/* A bookmark, open and closed. Two shapes rather than one with a class,
+     because the filled one is what says "this is in your list" to somebody
+     who cannot see colour. */}}
+{{define "icon-bookmark"}}<svg class="icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false"
+  fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+><path d="M4 2.5h8v11l-4-3-4 3z"/></svg>{{end}}
+
+{{define "icon-bookmark-kept"}}<svg class="icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false"
+  fill="currentColor" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+><path d="M4 2.5h8v11l-4-3-4 3z"/></svg>{{end}}
+
+{{/* The keep control, which only exists for a reader who is signed in.
+
+     A form post and a redirect back, like the "me too" beside it, so it works
+     with JavaScript switched off. Unlike "me too" it is *not* remembered in
+     the browser: a bookmark is a row the register holds for one person who
+     asked for it, so the server is the only place that knows, and the state
+     the button shows is the truth rather than this browser's recollection.
+
+     Two paths rather than one toggle, so a stale page cannot undo what
+     somebody just did: a button that said "keep" posts a keep, whatever has
+     happened since. */}}
+{{define "keep-control"}}
+{{- $page := .Page }}{{ $card := .Card }}{{ $kind := .Kind -}}
+{{ if $page.SignedIn }}
+{{/* The whole path on each branch rather than one with the verb
+     interpolated, so both spellings appear literally here and in
+     register.js. Somebody renaming a route can then grep for it and find
+     both; interpolated, the coupling is real and invisible, which is how
+     these two files drifted apart the first time. */}}
+<form method="post" action="{{ if $card.Kept }}/{{ $kind }}/{{ $card.ID }}/release{{ else }}/{{ $kind }}/{{ $card.ID }}/keep{{ end }}">
+  <button class="card-action keep{{ if $card.Kept }} kept{{ end }}" type="submit"
+          data-tip="{{ if $card.Kept }}{{ $page.T "card.release_hint" }}{{ else }}{{ $page.T "card.keep_hint" }}{{ end }}">
+    {{ if $card.Kept }}{{ template "icon-bookmark-kept" }}{{ else }}{{ template "icon-bookmark" }}{{ end }}
+    <span class="visually-hidden">{{ if $card.Kept }}{{ $page.T "card.kept" }}{{ else }}{{ $page.T "card.keep" }}{{ end }}</span>
+  </button>
+</form>
+{{ end }}
+{{end}}
+
+{{/* Reporting a doléance, or saying a person already read it.
+
+     The two are one control in two states because that is what they are to a
+     reader: the question "has anybody looked at this?" is either open or
+     answered. An unverified doléance was published on a machine's confidence
+     and offers the way to ask for a person; a verified one says a person came,
+     and offers nothing, which is also what stops the same text being sent back
+     to the curator who just ruled on it.
+
+     The mark is not a button and must not look like one. Nothing happens if it
+     is pressed, because there is nothing left to ask.
+
+     A form post, like the "me too" beside it, so it works with JavaScript off.
+     Unlike "me too" it is not remembered in this browser, and does not need to
+     be: a reported doléance leaves the register, so the control cannot be
+     pressed twice from a page that has been reloaded. */}}
+{{define "report-control"}}
+{{- $page := .Page }}{{ $card := .Card -}}
+{{ if $card.Verified }}
+<span class="card-action verified" data-tip="{{ $page.T "card.verified_hint" }}">
+  {{ template "icon-check" }}<span class="visually-hidden">{{ $page.T "card.verified" }}</span>
+</span>
+{{ else }}
+{{/* A link to a page that asks, not a button that acts.
+
+     An icon with no label beside two others is easy to press without meaning
+     to, and what this one does — take somebody's published doléance off the
+     register — is the last thing on this card that should happen by accident.
+     So the press costs a page that says what is about to happen and shows the
+     text it would happen to, and the irreversible-looking half is a second,
+     deliberate press.
+
+     A GET also means no amount of mis-clicking, prefetching or link-scanning
+     can report anything: nothing changes until the form on that page is
+     posted. */}}
+<a class="card-action report" href="/doleance/{{ $card.ID }}/report"
+   data-tip="{{ $page.T "card.report_hint" }}">
+  {{ template "icon-flag" }}<span class="visually-hidden">{{ $page.T "card.report" }}</span>
+</a>
+{{ end }}
+{{end}}
+
+{{define "icon-plus"}}<svg class="icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false"
+  fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+><path d="M8 3.25v9.5M3.25 8h9.5"/></svg>{{end}}
+
+{{define "icon-close"}}<svg class="icon" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true" focusable="false"
+  fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+><path d="M4 4l8 8M12 4l-8 8"/></svg>{{end}}
+
+{{/* The announcement form, used by the add panel and by every row's edit
+     drawer. One definition, because a form that differed between the two
+     places would eventually accept a field in one and not the other.
+
+     Both kinds of date are always present and the person fills the one that
+     applies: hiding a field behind the type would need a script, and the
+     backend refuses the wrong combination anyway. */}}
+{{/* A rhythm as a sentence, in the reader's language.
+
+     The backend hands over the rule broken into parts rather than a rendered
+     phrase, because "the fourth Thursday of the month" is a sentence with
+     different word order in every language this register speaks, and the one
+     place that knows the reader's is here. */}}
+{{define "rhythm"}}
+{{- $page := .Page }}{{ $parts := .Parts -}}
+{{- if $parts -}}
+  {{- if eq $parts.Key "recur.weekly" -}}
+    {{ $page.Tf "recur.weekly" "Days" (weekdayNames $page $parts.Weekdays) }}
+  {{- else if eq $parts.Key "recur.weekly_interval" -}}
+    {{ $page.Tf "recur.weekly_interval" "Count" $parts.Interval "Days" (weekdayNames $page $parts.Weekdays) }}
+  {{- else if eq $parts.Key "recur.monthly_weekday" -}}
+    {{ $page.Tf "recur.monthly_weekday" "Position" ($page.T (printf "position.%d" $parts.Week)) "Day" (weekdayNames $page $parts.Weekdays) }}
+  {{- else if eq $parts.Key "recur.monthly_day" -}}
+    {{ $page.Tf "recur.monthly_day" "Day" $parts.Day }}
+  {{- else if eq $parts.Key "recur.yearly_weekday" -}}
+    {{ $page.Tf "recur.yearly_weekday" "Position" ($page.T (printf "position.%d" $parts.Week)) "Day" (weekdayNames $page $parts.Weekdays) "Month" ($page.T (printf "month.%d" $parts.Month)) }}
+  {{- else if eq $parts.Key "recur.yearly_day" -}}
+    {{ $page.Tf "recur.yearly_day" "Day" $parts.Day "Month" ($page.T (printf "month.%d" $parts.Month)) }}
+  {{- end -}}
+{{- end -}}
+{{end}}
+
+{{define "action-form"}}
+{{ $page := .Page }}{{ $id := .ActionID }}
+{{/* Date, then time, then what kind of thing it is — and the rhythm only
+     when it is a recurring one.
+
+     The whole block is shown and then hidden by CSS `:has()` rather than
+     revealed by it, so a browser that does not support the selector shows
+     everything and the form still works. Hiding by default would mean a
+     browser without it could never announce a recurring action at all. */}}
+<form class="action-form" method="post" action="/groups/{{ $page.ID }}/actions">
+  {{ if $id }}<input type="hidden" name="action" value="{{ $id }}">{{ end }}
+
+  <label for="title-{{ $id }}">{{ $page.T "actions.what" }}</label>
+  <input type="text" id="title-{{ $id }}" name="title" maxlength="160" required
+         autocomplete="off" value="{{ .Title }}">
+
+  <label for="description-{{ $id }}">{{ $page.T "actions.description" }}</label>
+  <textarea id="description-{{ $id }}" name="description" maxlength="2000">{{ .Description }}</textarea>
+
+  <label for="starts_on-{{ $id }}">{{ $page.T "actions.date" }}
+    <span class="hint">{{ $page.T "actions.date_hint" }}</span>
+  </label>
+  <input class="datelike" type="date" id="starts_on-{{ $id }}" name="starts_on" required value="{{ .StartsOn }}">
+
+  <label for="starts_time-{{ $id }}">{{ $page.T "actions.time" }}</label>
+  <input class="datelike" type="time" id="starts_time-{{ $id }}" name="starts_time" value="{{ .StartsTime }}">
+
+  <label for="type-{{ $id }}">{{ $page.T "actions.type" }}</label>
+  <select class="kind" id="type-{{ $id }}" name="type">
+    <option value="onetime"{{ if eq .Type "onetime" }} selected{{ end }}>{{ $page.T "actions.onetime" }}</option>
+    <option value="recurrent"{{ if eq .Type "recurrent" }} selected{{ end }}>{{ $page.T "actions.recurrent" }}</option>
+  </select>
+
+  <fieldset class="rhythm">
+    <legend>{{ $page.T "actions.rhythm" }}
+      <span class="hint">{{ $page.T "actions.rhythm_hint" }}</span>
+    </legend>
+
+    <label for="repeat-{{ $id }}">{{ $page.T "actions.repeat" }}</label>
+    <select class="repeat" id="repeat-{{ $id }}" name="repeat">
+      <option value="weekly"{{ if eq .Repeat "weekly" }} selected{{ end }}>{{ $page.T "actions.repeat_weekly" }}</option>
+      <option value="monthly"{{ if eq .Repeat "monthly" }} selected{{ end }}>{{ $page.T "actions.repeat_monthly" }}</option>
+      <option value="yearly"{{ if eq .Repeat "yearly" }} selected{{ end }}>{{ $page.T "actions.repeat_yearly" }}</option>
+    </select>
+
+    <div class="when-weekly">
+      <label for="interval-{{ $id }}">{{ $page.T "actions.interval" }}</label>
+      <select id="interval-{{ $id }}" name="interval">
+        {{ $interval := .Interval }}
+        {{ range $n := intervals }}
+        <option value="{{ $n }}"{{ if eq $n $interval }} selected{{ end }}>{{ $page.Tf "actions.every_n_weeks" "Count" $n }}</option>
+        {{ end }}
+      </select>
+
+      <label>{{ $page.T "actions.weekdays" }}</label>
+      <div class="weekdays">
+        {{ $chosen := .Weekdays }}
+        {{ range $d := weekdayNumbers }}
+        <label class="checkbox">
+          <input type="checkbox" name="weekdays" value="{{ $d }}"{{ if contains $chosen $d }} checked{{ end }}>
+          <span>{{ $page.T (printf "weekday.%d" $d) }}</span>
+        </label>
+        {{ end }}
+      </div>
+    </div>
+
+    <div class="when-yearly">
+      <label for="month-{{ $id }}">{{ $page.T "actions.which_month" }}</label>
+      <select id="month-{{ $id }}" name="month">
+        {{ $month := .Month }}
+        {{ range $m := monthNumbers }}
+        <option value="{{ $m }}"{{ if eq $m $month }} selected{{ end }}>{{ $page.T (printf "month.%d" $m) }}</option>
+        {{ end }}
+      </select>
+    </div>
+
+    <div class="when-dated">
+      <label for="monthly-{{ $id }}">{{ $page.T "actions.monthly_mode" }}</label>
+      <select class="monthly-mode" id="monthly-{{ $id }}" name="monthly">
+        <option value="weekday"{{ if ne .Monthly "day" }} selected{{ end }}>{{ $page.T "actions.monthly_weekday" }}</option>
+        <option value="day"{{ if eq .Monthly "day" }} selected{{ end }}>{{ $page.T "actions.monthly_day" }}</option>
+      </select>
+
+      <div class="by-weekday">
+        <label for="week-{{ $id }}">{{ $page.T "actions.which_week" }}</label>
+        <select id="week-{{ $id }}" name="week">
+          {{ $week := .Week }}
+          {{ range $w := positions }}
+          <option value="{{ $w }}"{{ if eq $w $week }} selected{{ end }}>{{ $page.T (printf "position.%d" $w) }}</option>
+          {{ end }}
+        </select>
+
+        <label for="weekday-{{ $id }}">{{ $page.T "actions.which_weekday" }}</label>
+        <select id="weekday-{{ $id }}" name="weekday">
+          {{ $weekday := .Weekday }}
+          {{ range $d := weekdayNumbers }}
+          <option value="{{ $d }}"{{ if eq $d $weekday }} selected{{ end }}>{{ $page.T (printf "weekday.%d" $d) }}</option>
+          {{ end }}
+        </select>
+      </div>
+
+      <div class="by-day">
+        <label for="day-{{ $id }}">{{ $page.T "actions.which_day" }}</label>
+        <input type="number" id="day-{{ $id }}" name="day" min="1" max="31" value="{{ .Day }}">
+        <p class="section-note">{{ $page.T "actions.short_month_note" }}</p>
+      </div>
+    </div>
+
+    <label for="note-{{ $id }}">{{ $page.T "actions.timing_note" }}
+      <span class="hint">{{ $page.T "actions.timing_note_hint" }}</span>
+    </label>
+    <input type="text" id="note-{{ $id }}" name="note" maxlength="120"
+           autocomplete="off" value="{{ .Note }}">
+  </fieldset>
+
+  {{/* Where it happens, and only when that is not where the group meets.
+
+       Most actions are the group's own monthly meeting in the group's own
+       room, and asking somebody to re-pin it every time is how a form stops
+       being used. So the default is inheritance and the map is the exception —
+       which is also why this is a switch rather than an always-open map: an
+       empty map above a Save button reads as a field somebody forgot to fill.
+
+       Hidden by `:has()` when the switch is off rather than revealed when it
+       is on, like the rhythm above. A browser without the selector shows the
+       map always, and the form still does the right thing: no pin, no
+       coordinates, and the action keeps the group's place. */}}
+  <fieldset class="venue">
+    <legend>{{ $page.T "actions.where" }}</legend>
+
+    <label class="checkbox">
+      <input class="elsewhere" type="checkbox" name="elsewhere" value="1"
+             {{ if .Elsewhere }}checked{{ end }}>
+      <span>{{ $page.T "actions.elsewhere" }}</span>
+    </label>
+    <p class="section-note">{{ $page.T "actions.elsewhere_hint" }}</p>
+
+    <div class="venue-map">
+      <div data-map data-pick="true" class="map"
+           data-country="{{ $page.Country }}"
+           data-latitude="{{ with .Latitude }}{{ . }}{{ end }}"
+           data-longitude="{{ with .Longitude }}{{ . }}{{ end }}"></div>
+      <input type="hidden" data-role="latitude" name="latitude" value="{{ with .Latitude }}{{ . }}{{ end }}">
+      <input type="hidden" data-role="longitude" name="longitude" value="{{ with .Longitude }}{{ . }}{{ end }}">
+      <input type="hidden" data-role="zoom" name="zoom" value="">
+      <input type="hidden" name="place" value="{{ .Place }}">
+      <input type="hidden" name="country" value="{{ $page.Country }}">
+      {{ if .Place }}<p class="section-note">{{ $page.T "manage.place_current" }} {{ .Place }}</p>{{ end }}
+    </div>
+  </fieldset>
+
+  <div class="drawer-actions">
+    <button class="button" type="submit">{{ $page.T "manage.save" }}</button>
+    <a class="button secondary" href="#actions">{{ $page.T "manage.cancel" }}</a>
+  </div>
+</form>
+{{end}}
+
+{{/* The openness paragraphs and the two addresses that make them checkable.
+     One definition because it appears in two places — the footer of every
+     page, and the body of the about page — and a claim this project makes
+     about itself should not exist in two wordings. */}}
+{{define "openness"}}
+      <p>{{ .T "footer.about" }}</p>
+      <p>{{ .T "footer.openness" }}</p>
+      <p>{{ .T "footer.anonymous" }}</p>
+      <p class="footer-links">
+        <a href="/archive">{{ .T "footer.archive" }}</a>
+        <a href="/dropped">{{ .T "footer.dropped" }}</a>
+        {{/* The only outbound links on the site, both to the repository.
+             rel="noopener" because any
+             target="_blank" added later would otherwise hand the other page a
+             handle on this one; noreferrer because the address of the page
+             somebody is reading is the thing least worth leaking — which is
+             what Referrer-Policy already says for every other request. */}}
+        <a href="https://github.com/CoderSyndicate/doleances"
+           rel="noopener noreferrer">{{ .T "footer.source" }}</a>
+        <a href="https://github.com/CoderSyndicate/doleances/blob/main/IMPRESSUM.md"
+           rel="noopener noreferrer">{{ .T "footer.impressum" }}</a>
+      </p>
+{{end}}
+
+{{define "navlink"}}<a href="{{ .Href }}"{{ if (.Page.IsCurrent .Href) }} aria-current="page"{{ end }}>{{ .Page.T .Key }}</a>{{end}}
+
+{{/* One card, one shape, on every page that shows a doléance.
+
+     **The excerpt is the link.** Not the card: a reader following a link
+     should know what they are following, and the words are that. It also
+     means the link has a real accessible name — the doléance's own opening —
+     rather than a label invented for an empty box stretched over everything.
+
+     On the doléance's own page the card is the destination rather than a way
+     to one, so the link and the "more" affordance are gone and the text is
+     whole. */}}
+{{define "message-card"}}
+{{- $page := .Page }}{{ $card := .Card -}}
+<article class="card message-card{{ if $card.Full }} card-full{{ end }}">
+  <div class="card-meta">
+    <span>{{ if $card.Nickname }}{{ $card.Nickname }}{{ else }}{{ $card.AnonymousLabel }}{{ end }}</span>
+    {{ if $card.Place }}<span>{{ $card.Place }}</span>{{ end }}
+    {{ if $card.Date }}<span>{{ $card.Date }}</span>{{ end }}
+  </div>
+
+  {{ if $card.Full }}
+  <p class="card-text">{{ $card.Text }}</p>
+  {{ else }}
+  <p class="card-text"><a class="card-excerpt" href="/doleance/{{ $card.ID }}"
+    >{{ $card.Text }}{{ if $card.Truncated }}<span class="card-more">…&nbsp;[{{ $page.T "card.more" }}]</span>{{ end }}</a></p>
+  {{ end }}
+
+  {{ if $card.Subjects }}
+  <div class="subjects">
+    {{ range $card.Subjects }}<span class="subject">{{ . }}</span>{{ end }}
+  </div>
+  {{ end }}
+
+  <footer class="card-actions">
+    {{/* A form rather than a script, so it works with JavaScript off. The
+         island only remembers, in this browser, what this browser pressed —
+         there is nobody to attribute a like to and the register wants none. */}}
+    <form method="post" action="/doleance/{{ $card.ID }}/like">
+      <button class="card-action like" type="submit" data-like="{{ $card.ID }}"
+              data-tip="{{ $page.T "card.like_hint" }}">
+        {{ template "icon-heart" }}<span class="like-count">{{ $card.Likes }}</span>
+        <span class="visually-hidden">{{ $page.T "card.like" }}</span>
+      </button>
+    </form>
+
+    {{ template "keep-control" (dict "Page" $page "Card" $card "Kind" "doleance") }}
+
+    {{ template "report-control" (dict "Page" $page "Card" $card) }}
+
+    <a class="card-action" href="/doleance/{{ $card.ID }}"
+       data-tip="{{ $page.T "card.permalink" }}">
+      {{ template "icon-link" }}<span class="visually-hidden">{{ $page.T "card.permalink" }}</span>
+    </a>
+  </footer>
+</article>
+{{end}}
+
+{{/* A passage from an earlier register.
+
+     It carries the same two controls a doléance's card does, and the "me too"
+     means something slightly different here — somebody recognising themselves
+     in 1789 is saying the two registers are one act performed twice, which is
+     the claim this whole project rests on.
+
+     The page it links to is where the passage lives with its provenance; on
+     that page the card is the destination and the controls stay but the link
+     does not. */}}
+{{define "historical-card"}}
+{{- $page := .Page }}{{ $card := .Card -}}
+<article class="card historical{{ if $card.Full }} card-full{{ end }}">
+  <header class="card-header">
+    <div class="card-meta">
+      {{ if $card.Period }}<span>{{ $card.Period }}</span>{{ end }}
+      {{ if $card.Placeholder }}<span class="placeholder-badge">{{ $card.PlaceholderLabel }}</span>{{ end }}
+      {{/* It used to read "oc →", which is a language tag and an arrow: true,
+           and unreadable. It matters more now that it is the only place the
+           machine translation is admitted — the paragraph that used to say so
+           above the page is gone, and a reader meeting a fluent French
+           eighteenth-century grievance deserves to know whose French it is.
+           The tag stays, after the words, for anybody it does tell. */}}
+      {{ if $card.TranslatedFrom }}<span class="translated-badge">{{ $page.T "card.translated" }} · {{ $card.TranslatedFrom }}</span>{{ end }}
+    </div>
+    {{ if $card.DocumentTitle }}<p class="card-document">{{ $card.DocumentTitle }}</p>{{ end }}
+  </header>
+
+  {{ if $card.Title }}<h3 class="card-title">{{ $card.Title }}</h3>{{ end }}
+
+  {{ if $card.Full }}
+  <p class="card-text">{{ $card.Text }}</p>
+  {{ else }}
+  <p class="card-text"><a class="card-excerpt" href="/voices/{{ $card.ID }}">{{ $card.Text }}</a></p>
+  {{ end }}
+
+  {{ if or $card.Region $card.Source }}
+  <footer class="card-provenance">
+    {{ if $card.Region }}<p class="card-place">{{ $card.Region }}</p>{{ end }}
+    {{ if $card.Source }}<p class="card-source">{{ $card.Source }}</p>{{ end }}
+  </footer>
+  {{ end }}
+
+  <footer class="card-actions">
+    <form method="post" action="/voices/{{ $card.ID }}/like">
+      <button class="card-action like" type="submit" data-like="{{ $card.ID }}"
+              data-tip="{{ $page.T "card.like_hint_past" }}">
+        {{ template "icon-heart" }}<span class="like-count">{{ $card.Likes }}</span>
+        <span class="visually-hidden">{{ $page.T "card.like" }}</span>
+      </button>
+    </form>
+
+    {{ template "keep-control" (dict "Page" $page "Card" $card "Kind" "voices") }}
+
+    <a class="card-action" href="/voices/{{ $card.ID }}"
+       data-tip="{{ $page.T "card.permalink" }}">
+      {{ template "icon-link" }}<span class="visually-hidden">{{ $page.T "card.permalink" }}</span>
+    </a>
+  </footer>
+</article>
+{{end}}
+
+{{define "corpus-window"}}
+{{ $window := .Window }}{{ $page := .Page }}{{ $anchor := .Anchor }}
+<div class="grid">
+  {{ range $window.Texts }}{{ template "historical-card" dict "Card" . "Page" $page }}{{ end }}
+</div>
+{{ if $window.HasMore }}
+<nav class="corpus-nav" aria-label="{{ $page.T "voices.browse" }}">
+  <a class="button small secondary" rel="prev"
+     href="?p={{ $window.Previous }}#{{ $anchor }}"
+     aria-label="{{ $page.T "voices.previous" }}">‹</a>
+  <span class="corpus-position">{{ $window.Position }} / {{ $window.Total }}</span>
+  <a class="button small secondary" rel="next"
+     href="?p={{ $window.Next }}#{{ $anchor }}"
+     aria-label="{{ $page.T "voices.next" }}">›</a>
+</nav>
+{{ end }}
+{{end}}
+
+{{/*
+  The subject filter, defined once and used by every page that offers one.
+
+  A disclosure with checkboxes rather than a <select multiple>. The listbox it
+  replaces could not show a hierarchy at all, showed six rows of a long
+  vocabulary behind a scrollbar, and needed a modifier key to choose more than
+  one — which most people do not know.
+
+  <details> is deliberate: it is a real dropdown with no JavaScript and no ARIA
+  to get wrong. It opens on click and on Enter or Space, the summary is
+  focusable, and the checkboxes inside carry the field name themselves — so on
+  a page that is a plain form (Around me) this submits natively, exactly as the
+  select did.
+
+  Depth comes from the server already ordered, so the indentation here is one
+  inline style and no logic.
+*/}}
+{{define "subject-filter"}}
+<div class="subject-filter">
+  <p class="subject-filter-label" id="{{ .ID }}-label">{{ .Label }}
+    <span class="hint">{{ .Hint }}</span>
+  </p>
+
+  <details class="subject-filter-menu" id="{{ .ID }}">
+    <summary aria-describedby="{{ .ID }}-label">
+      <span data-subject-summary>{{ .Placeholder }}</span>
+    </summary>
+
+    <div class="subject-filter-options">
+      {{ if .Subjects }}
+        {{ range .Subjects }}
+        {{/* The indent is a class rather than a style attribute, because a
+             Content-Security-Policy that allowed inline styles would be
+             allowing the thing it is there to refuse. The backend caps the
+             hierarchy at six, so seven classes cover every case it can
+             produce — and a depth beyond them simply renders flush, which is
+             a filter that reads oddly rather than one that breaks. */}}
+        <label class="subject-option depth-{{ .Depth }}">
+          <input type="checkbox" name="subject" value="{{ .Slug }}">
+          <span>{{ .Label }}</span>
+        </label>
+        {{ end }}
+      {{ else }}
+        <p class="empty">{{ .Empty }}</p>
+      {{ end }}
+    </div>
+  </details>
+</div>
+{{end}}

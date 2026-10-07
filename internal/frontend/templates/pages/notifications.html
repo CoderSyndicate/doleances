@@ -1,0 +1,70 @@
+{{define "content"}}
+<div class="prose">
+  <h1>{{ .T "notifications.title" }}</h1>
+  <p class="lede">{{ .T "notifications.lede" }}</p>
+  {{/* Said on the page, not only in the code: a push may never arrive — a
+       refused permission, an iPhone that has not installed the site, an
+       endpoint that died last week — and this list is where everything is
+       written whatever happened. */}}
+  <p class="section-note">{{ .T "notifications.note" }}</p>
+</div>
+
+{{ if .List.Items }}
+<div class="prose">
+  {{ if .List.Unread }}
+  <form method="post" action="/notifications">
+    <button class="button secondary" type="submit" name="read_all" value="1">
+      {{ .T "notifications.read_all" }}
+    </button>
+  </form>
+  {{ end }}
+</div>
+
+<div class="grid">
+  {{ range .List.Items }}
+  <article class="card{{ if not .Read }} unread{{ end }}">
+    <div class="card-meta">
+      <span>{{ .When }}</span>
+      {{ if not .Read }}<span class="pill">{{ $.T "notifications.unread" }}</span>{{ end }}
+    </div>
+
+    <h2 class="card-title">
+      {{ with .Href }}<a href="{{ . }}">{{ $.T "notifications.open" }}</a>{{ end }}
+      {{ .Title }}
+    </h2>
+    {{ if .Body }}<p class="card-text">{{ .Body }}</p>{{ end }}
+
+    <footer class="card-actions">
+      {{ if not .Read }}
+      <form method="post" action="/notifications">
+        <button class="button secondary" type="submit" name="read" value="{{ .ID }}">
+          {{ $.T "notifications.read" }}
+        </button>
+      </form>
+      {{ end }}
+      <form method="post" action="/notifications">
+        <button class="icon-button" type="submit" name="remove" value="{{ .ID }}"
+                title="{{ $.T "notifications.remove" }}" aria-label="{{ $.T "notifications.remove" }}">
+          {{ template "icon-bin" }}
+        </button>
+      </form>
+    </footer>
+  </article>
+  {{ end }}
+</div>
+
+<nav class="pagination" aria-label="{{ .T "notifications.title" }}">
+  {{ if gt .Page 1 }}
+  <a href="/notifications?page={{ dec .Page }}">&larr; {{ .T "pagination.previous" }}</a>
+  {{ end }}
+  {{ if .HasMore }}
+  <a href="/notifications?page={{ inc .Page }}">{{ .T "pagination.next" }} &rarr;</a>
+  {{ end }}
+</nav>
+{{ else }}
+<div class="prose">
+  <p>{{ .T "notifications.empty" }}</p>
+  <p class="section-note"><a href="/account">{{ .T "account.title" }}</a></p>
+</div>
+{{ end }}
+{{end}}

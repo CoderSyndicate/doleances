@@ -1,0 +1,80 @@
+{
+  "source": {
+    "title": "Doléances des femmes de Saint-Jean-de-Luz et Ciboure au Roi",
+    "period": "1789",
+    "region": "Saint-Jean-de-Luz et Ciboure, Labourd",
+    "latitude": 43.3878,
+    "longitude": -1.6594,
+    "language": "fr",
+    "reference": "J.-B. Daranatz (éd.), p. 317-327. Bilketa, ark:/27020/art0350740",
+    "url": "https://www.bilketa.eus/ark:/27020/art0350740",
+    "note": "Adresse au roi rédigée par les femmes de Saint-Jean-de-Luz et Ciboure au printemps 1789, contestant leur exclusion des États généraux. Transcription complète : data/1789-saint-jean-de-luz-doleances-du-sexe.md"
+  },
+  "snippets": [
+    {
+      "id": "sjdl-oubli",
+      "title": "Quatorze millions d'âmes oubliées",
+      "text": "Quoi ! sire, votre majesté déclare à la face de l'europe vouloir assembler la nation entière, et elle nous oublie dans la convocation !\n\n[...] Compter pour rien quatorze millions d'ames, ce serait indubitablement la preuve de l'imperitie la plus complexe en fait de calcul, comme en fait de législation."
+    },
+    {
+      "id": "sjdl-representative",
+      "title": "Une assemblée dite représentative",
+      "text": "Nous demandons si une assemblée nationale de laquelle est injustement proscrite la classe la plus multipliée peut être raisonnablement dénommée l'assemblée représentative de cette même nation."
+    },
+    {
+      "id": "sjdl-lier",
+      "title": "Des lois qui ne lient pas",
+      "text": "Si ces lois prononcées à l'inscu et contre le gré de ces quatorze millions d'âmes rejettées pourroient lier ces dernières ; si celles ci ne sont pas en droit de se plaindre de l'omission injurieuse que l'on fait de leurs personnes dans une affaire qui les interesse autant."
+    },
+    {
+      "id": "sjdl-tache",
+      "title": "Parce qu'ils sont hommes",
+      "text": "C'est donc parce qu'ils sont hommes qu'on les appelle au conseil de la nation ; et nous, on nous en exclut, parce que nous ne le sommes pas. quelle indigne partialité ! est ce donc une tache ignominieuse d'être né femme ? sera-t-il dit que sous un règne si éclairé nous aions a rougir de notre sexe ?"
+    },
+    {
+      "id": "sjdl-education",
+      "title": "L'éducation frivole",
+      "text": "N'est-il pas criant que l'on ne cultive en nous que nos facultés corporelles, comme si nous n'étions que matière, comme si nous n'avions pas d'ame ? n'est il pas honteux que l'on se borne a nous apprendre a composer notre maintien, a symmétriser nos gestes, a cadencer nos pas, a danser avec grâce, a chanter avec mélodie, comme si l'on ne voïait en nous que des marionnettes et des linottes a tête légère ?"
+    },
+    {
+      "id": "sjdl-universites",
+      "title": "Des écoles, des collèges, des universités",
+      "text": "Nous avons a proposer des ecoles, des colleges, des universités a établir, ou nous soïons admises pour y recevoir les instructions nécessaires au développement entier de nos facultés intellectuelles, afin que nous puissions concourir, autant qu'il sera en nous, a l'oeuvre immortelle du bonheur général."
+    },
+    {
+      "id": "sjdl-sabines",
+      "title": "Sans les Sabines",
+      "text": "Rome naquit, il est vrai, sans le ministère des femmes ; mais sans les Sabines, que serait devenu Rome ? elle eut disparu de dessus la surface de la terre presque aussitôt après sa naissance."
+    },
+    {
+      "id": "sjdl-deesses",
+      "title": "Des déesses d'un autre genre",
+      "text": "En outre, que votre ministre ouvre les annales de nos ancêtres : il verra que jadis dans nos gaules, nos princes, nos chefs, nos magistrats ne prenoient aucune délibération importante, soit pour la paix, soit pour la guerre ; qu'ils ne formaient aucun projet essentiel, qu'ils ne l'exécutaient point sans avoir préalablement consulté notre sexe. ils nous reconnaissaient donc capables des grandes affaires, les hommes d'alors ; ils rendaient donc hommage a nos talens ; ils étaient donc plus justes que les hommes d'aujourd'hui. pourquoi cela ? parce qu'ils étaient moins superbes et moins tyraniques. nous étions a leurs yeux autant de déesses, mais des déesses d'un autre genre que les déesses de nos jours."
+    },
+    {
+      "id": "sjdl-talens-ensevelis",
+      "title": "Des talents ensevelis",
+      "text": "Ce ne peut donc être qu'au despotisme masculin que nous devons cette ignorance universelle dans laquelle on tient tous nos talens ensevelis ; ce ne peut être qu'a cette tyrannie voluptueuse des hommes qui ont fait de nous presqu'autant d'automates assez plaisans pour les divertir et les amuser."
+    },
+    {
+      "id": "sjdl-divorce",
+      "title": "Sur le divorce, sans nous entendre",
+      "text": "Nous voulons parler de la question du divorce, sur lequel la raison et la nature ne permettent pas de prononcer sans notre participation et sans nous entendre ; attendu que, si le divorce passait en loi, nos législateurs toujours tyranniques pourraient y annexer des clauses toutes à notre charge, auxquelles il serait injuste de nous assujetir forcément."
+    },
+    {
+      "id": "sjdl-souffrance",
+      "title": "L'éloquence de la souffrance",
+      "text": "Nous seules en souffrons, et l'eloquence de la souffrance est plus pathétique, plus touchante, et plus lumineuse que l'éloquence de la froide raison. des hommes chargés de plaider notre cause n'y mettraient pas cette chaleur, ce feu qui fait eclorre la vérité."
+    },
+    {
+      "id": "sjdl-par-tete",
+      "title": "Non par ordre, mais par tête",
+      "text": "Il n'est qu'une seule grâce que nous osions demander avec instance a votre majesté : c'est que nos opinions soient prises, non par ordre, mais par tête ; parce que, plus nous serons a opiner, mieux nos interets seront discutés et mieux ils seront connus."
+    },
+    {
+      "id": "sjdl-meme-dignite",
+      "title": "À la même dignité",
+      "text": "S'il est glorieux pour un monarque de régner sur des hommes libres, il ne l'est pas moins pour lui de regner sur des femmes élevées à la même dignité."
+    }
+  ]
+}

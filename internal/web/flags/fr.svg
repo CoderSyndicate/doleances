@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 40" role="img">
+  <!-- The tricolore, in the same three values the bundled "revolution" theme
+       uses, so the flag and the theme cannot drift apart. -->
+  <rect width="20" height="40" x="0" fill="#0055a4"/>
+  <rect width="20" height="40" x="20" fill="#ffffff"/>
+  <rect width="20" height="40" x="40" fill="#ef4135"/>
+</svg>

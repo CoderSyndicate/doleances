@@ -1,0 +1,32 @@
+{{define "content"}}
+<div class="prose">
+  <h1>{{ .T "receipt.title" }}</h1>
+  <p class="lede">{{ .T "receipt.lede" }}</p>
+  <p>{{ .T "receipt.pending" }}</p>
+</div>
+
+<article class="card">
+  <header class="card-header">
+    <h2 class="card-title">{{ .T "receipt.keep" }}</h2>
+  </header>
+
+  <p class="card-text">{{ .T "receipt.keep_why" }}</p>
+
+  <p><strong>{{ .T "receipt.permalink" }}</strong></p>
+  <p><code class="receipt-value">{{ .Permalink }}</code></p>
+
+  <p><strong>{{ .T "receipt.token" }}</strong></p>
+  <p><code class="receipt-value">{{ .Token }}</code></p>
+
+  <footer class="card-provenance">
+    <p class="card-source">{{ .T "receipt.token_warning" }}</p>
+  </footer>
+</article>
+
+<div class="prose">
+  <p>
+    <a class="button" href="{{ .Permalink }}">{{ .T "receipt.view" }}</a>
+    <a class="button secondary" href="/doleance">{{ .T "receipt.another" }}</a>
+  </p>
+</div>
+{{end}}

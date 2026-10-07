@@ -1,0 +1,90 @@
+{{define "content"}}
+<div class="prose">
+  <h1>{{ .T "account.signin_title" }}</h1>
+  <p class="lede">{{ .T "account.signin_lede" }}</p>
+</div>
+
+{{/* One page for making an account and coming back to one, because with
+     passkeys they are nearly the same act and the browser knows which: signing
+     in offers the credentials it already holds, and making an account asks for
+     a new one. Two pages would make somebody choose between two words for a
+     thing they have no way to tell apart. */}}
+<div data-passkey
+     data-next="{{ .Next }}"
+     data-string-unsupported="{{ .T "account.unsupported" }}"
+     data-string-cancelled="{{ .T "account.cancelled" }}"
+     data-string-already="{{ .T "account.already" }}"
+     data-string-failed="{{ .T "account.failed" }}">
+
+  <p class="form-error" role="alert" data-passkey-error hidden></p>
+  <p class="form-error" data-passkey-unsupported hidden>{{ .T "account.unsupported" }}</p>
+
+  <div class="grid">
+    <article class="card">
+      <header class="card-header">
+        <h2 class="card-title">{{ .T "account.returning" }}</h2>
+      </header>
+      <p class="card-text">{{ .T "account.returning_note" }}</p>
+      <div class="drawer-actions">
+        <button class="button" type="button" data-passkey-action="signin">
+          {{ .T "account.signin" }}
+        </button>
+      </div>
+    </article>
+
+    <article class="card">
+      <header class="card-header">
+        <h2 class="card-title">{{ .T "account.new" }}</h2>
+      </header>
+      <p class="card-text">{{ .T "account.new_note" }}</p>
+
+      <label for="name">{{ .T "account.name" }}
+        <span class="hint">{{ .T "account.name_hint" }}</span>
+      </label>
+      <input type="text" id="name" maxlength="60" autocomplete="nickname"
+             required data-passkey-name>
+
+      <div class="drawer-actions">
+        <button class="button" type="button" data-passkey-action="signup">
+          {{ .T "account.create" }}
+        </button>
+      </div>
+    </article>
+  </div>
+
+  {{/* The way back for somebody whose every device is gone. There is no
+       address here to send a reset to, which is exactly why the codes exist —
+       and why this is a link rather than something hidden in a help page. */}}
+  <div class="prose">
+    {{ if .Recovering }}
+    <h2>{{ .T "account.recover_title" }}</h2>
+    <p>{{ .T "account.recover_lede" }}</p>
+
+    <form data-recovery-form>
+      <label for="code">{{ .T "account.recover_code" }}
+        <span class="hint">{{ .T "account.recover_code_hint" }}</span>
+      </label>
+      <input type="text" id="code" autocomplete="one-time-code" spellcheck="false"
+             maxlength="32" required data-recovery-code>
+
+      <div class="drawer-actions">
+        <button class="button" type="submit">{{ .T "account.recover_submit" }}</button>
+      </div>
+    </form>
+    {{ else }}
+    <p class="section-note">
+      <a href="/account/signin?recover=1{{ if .Next }}&amp;next={{ .Next }}{{ end }}">
+        {{ .T "account.recover_link" }}
+      </a>
+    </p>
+    {{ end }}
+  </div>
+
+  <div class="prose">
+    <h2>{{ .T "account.why_title" }}</h2>
+    <p>{{ .T "account.why" }}</p>
+  </div>
+</div>
+
+<script src="/static/passkey.js?v={{ .AssetVersion }}" defer></script>
+{{end}}

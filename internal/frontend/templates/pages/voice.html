@@ -1,0 +1,12 @@
+{{define "content"}}
+<div class="prose">
+  <h1>{{ .T "voice.title" }}</h1>
+  <p class="lede">{{ .T "voice.lede" }}</p>
+</div>
+
+{{ template "historical-card" dict "Card" .Text "Page" . }}
+
+<div class="prose">
+  <p class="section-note"><a href="/voices">&larr; {{ .T "nav.voices" }}</a></p>
+</div>
+{{end}}

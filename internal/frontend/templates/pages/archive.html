@@ -1,0 +1,51 @@
+{{define "content"}}
+<div class="prose">
+  <h1>{{ .T "archive.title" }}</h1>
+  <p class="lede">{{ .T "archive.lede" }}</p>
+  <p>{{ .T "archive.why" }}</p>
+  <p>{{ .T "archive.invitation" }}</p>
+</div>
+
+{{ if .Available }}
+<article class="card">
+  <header class="card-header">
+    <p class="card-date">{{ .GeneratedAt.Format "2006-01-02" }}</p>
+    <h2 class="card-title">{{ .T "archive.package" }}</h2>
+  </header>
+
+  <p class="card-text">{{ .T "archive.contains" }}</p>
+  <ul class="prose">
+    {{ range $name, $count := .Counts }}<li>{{ $count }} {{ $name }}</li>{{ end }}
+  </ul>
+
+  <div class="theme-bar">
+    <a class="button" href="/archive/download" download>{{ .T "archive.download" }}</a>
+    <span class="hint">{{ .SizeLabel }}</span>
+  </div>
+
+  <footer class="card-provenance">
+    <p class="card-source">{{ .T "archive.privacy" }}</p>
+  </footer>
+</article>
+{{ else }}
+<p class="empty">{{ .T "archive.none" }}</p>
+{{ end }}
+
+<div class="prose">
+  <h2>{{ .T "archive.inside_title" }}</h2>
+  <p>{{ .T "archive.inside" }}</p>
+  <h2>{{ .T "archive.mirror_title" }}</h2>
+  <p>{{ .T "archive.mirror" }}</p>
+
+  {{ if .ProjectURL }}
+  <h2>{{ .T "archive.source_title" }}</h2>
+  <p>{{ .T "archive.source" }}</p>
+  <p>{{ .T "archive.source_run" }}</p>
+  <p>
+    <a class="button secondary" href="{{ .ProjectURL }}" rel="noopener external">
+      {{ .T "archive.source_link" }}
+    </a>
+  </p>
+  {{ end }}
+</div>
+{{end}}

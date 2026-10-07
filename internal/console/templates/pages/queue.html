@@ -1,0 +1,95 @@
+{{define "content"}}
+<div class="prose">
+  <h1>{{ .T "queue.title" }}</h1>
+  <p class="lede">{{ .T "queue.lede" }}</p>
+  <p class="section-note">{{ .T "queue.rule" }}</p>
+</div>
+
+<p id="unassessed-note" class="section-note" role="status" hidden></p>
+<p id="status" class="section-note" role="status" aria-live="polite"></p>
+
+<div id="items" class="themes"></div>
+  <div class="table-bar" id="queue-pager" hidden>
+    <button class="button small secondary" type="button" id="queue-prev">&lsaquo;</button>
+    <span class="corpus-position" id="queue-position"></span>
+    <button class="button small secondary" type="button" id="queue-next">&rsaquo;</button>
+  </div>
+
+
+<section id="entity-proposals" hidden>
+  <div class="prose">
+    <h2>{{ .T "entities.title" }}</h2>
+    <p class="section-note">{{ .T "entities.lede" }}</p>
+  </div>
+  <div id="entities" class="themes"></div>
+</section>
+
+<section id="subject-questions" hidden>
+  <div class="prose">
+    <h2>{{ .T "subjects.title" }}</h2>
+    <p class="section-note">{{ .T "subjects.lede" }}</p>
+  </div>
+  <div id="questions" class="themes"></div>
+</section>
+
+<noscript>
+  <p class="empty">{{ .T "queue.noscript" }}</p>
+</noscript>
+
+<script nonce="{{ .Nonce }}">
+  window.queueStrings = {
+    empty: {{ .T "queue.empty" }},
+    accept: {{ .T "queue.accept" }},
+    reject: {{ .T "queue.reject" }},
+    reasonPrompt: {{ .T "queue.reason_prompt" }},
+    confirmReject: {{ .T "queue.confirm_reject" }},
+    accepted: {{ .T "queue.accepted" }},
+    rejected: {{ .T "queue.rejected" }},
+    failed: {{ .T "queue.failed" }},
+    reasonLabel: {{ .T "curation.reason" }},
+    working: {{ .T "queue.working" }},
+    unassessed: {{ .T "queue.unassessed" }},
+    noClassifier: {{ .T "queue.no_classifier" }},
+    notAssessed: {{ .T "queue.not_assessed" }},
+    confidence: {{ .T "queue.confidence" }},
+    anonymous: {{ .T "queue.anonymous" }},
+    born: {{ .T "queue.born" }},
+    entities: {
+      subject: {{ .T "entities.subject" }},
+      proposes: {{ .T "entities.proposes" }},
+      confidence: {{ .T "entities.confidence" }},
+      matchedAlias: {{ .T "entities.matched_alias" }},
+      context: {{ .T "entities.context" }},
+      read: {{ .T "entities.read" }},
+      entity: {{ .T "entities.entity" }},
+      confirm: {{ .T "entities.confirm" }},
+      reject: {{ .T "entities.reject" }},
+      confirmPrompt: {{ .T "entities.confirm_prompt" }},
+      confirmed: {{ .T "entities.confirmed" }},
+      rejected: {{ .T "entities.rejected" }}
+    },
+    subjects: {
+      question: {{ .T "subjects.question" }},
+      context: {{ .T "subjects.context" }},
+      noContext: {{ .T "subjects.no_context" }},
+      wikidata: {{ .T "subjects.wikidata" }},
+      similarity: {{ .T "subjects.similarity" }},
+      noSimilarity: {{ .T "subjects.no_similarity" }},
+      crossLanguage: {{ .T "subjects.cross_language" }},
+      sameEntity: {{ .T "subjects.same_entity" }},
+      differentEntities: {{ .T "subjects.different_entities" }},
+      agree: {{ .T "subjects.agree" }},
+      disagree: {{ .T "subjects.disagree" }},
+      read: {{ .T "subjects.read" }},
+      entity: {{ .T "subjects.entity" }},
+      merge: {{ .T "subjects.merge" }},
+      keep: {{ .T "subjects.keep" }},
+      confirmMerge: {{ .T "subjects.confirm_merge" }},
+      reasonPrompt: {{ .T "subjects.reason_prompt" }},
+      merged: {{ .T "subjects.merged" }},
+      kept: {{ .T "subjects.kept" }}
+    }
+  };
+</script>
+<script src="/static/queue.js?v={{ .AssetVersion }}"></script>
+{{end}}

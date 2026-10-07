@@ -1,0 +1,48 @@
+{{define "content"}}
+<div class="prose">
+  <h1>{{ .T "vocabulary.title" }}</h1>
+  <p class="lede">{{ .T "vocabulary.lede" }}</p>
+  <p class="section-note">{{ .T "vocabulary.rule" }}</p>
+</div>
+
+<div class="register-filters prose">
+  <label for="search">{{ .T "vocabulary.search" }}
+    <span class="hint">{{ .T "vocabulary.search_hint" }}</span>
+  </label>
+  <input id="search" type="search" autocomplete="off">
+  <div class="theme-bar">
+    <button id="search-go" class="button secondary" type="button">{{ .T "vocabulary.search_go" }}</button>
+    <button id="show-detached" class="button secondary" type="button">{{ .T "vocabulary.detached" }}</button>
+    <button id="show-all" class="button secondary" type="button">{{ .T "vocabulary.all" }}</button>
+  </div>
+</div>
+
+<p id="status" class="section-note" role="status" aria-live="polite"></p>
+
+<div id="vocabulary" class="themes"></div>
+
+<noscript>
+  <p class="empty">{{ .T "vocabulary.noscript" }}</p>
+</noscript>
+
+<script nonce="{{ .Nonce }}">
+  window.subjectStrings = {
+    empty: {{ .T "vocabulary.empty" }},
+    messages: {{ .T "vocabulary.messages" }},
+    unused: {{ .T "vocabulary.unused" }},
+    aliases: {{ .T "vocabulary.aliases" }},
+    entity: {{ .T "vocabulary.entity" }},
+    rename: {{ .T "vocabulary.rename" }},
+    open: {{ .T "vocabulary.open" }},
+    detachedNote: {{ .T "vocabulary.detached_note" }},
+    detachedEmpty: {{ .T "vocabulary.detached_empty" }},
+    noEntity: {{ .T "vocabulary.no_entity" }},
+    renamePrompt: {{ .T "vocabulary.rename_prompt" }},
+    reasonPrompt: {{ .T "vocabulary.reason_prompt" }},
+    renamed: {{ .T "vocabulary.renamed" }},
+    working: {{ .T "vocabulary.working" }},
+    failed: {{ .T "vocabulary.failed" }}
+  };
+</script>
+<script src="/static/subjects.js?v={{ .AssetVersion }}"></script>
+{{end}}

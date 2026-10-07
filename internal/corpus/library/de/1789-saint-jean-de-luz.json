@@ -1,0 +1,80 @@
+{
+  "source": {
+    "title": "Beschwerden der Frauen von Saint-Jean-de-Luz und Ciboure an den König",
+    "period": "1789",
+    "region": "Saint-Jean-de-Luz und Ciboure, Labourd",
+    "latitude": 43.3878,
+    "longitude": -1.6594,
+    "language": "fr",
+    "reference": "J.-B. Daranatz (Hg.), S. 317-327. Bilketa, ark:/27020/art0350740",
+    "url": "https://www.bilketa.eus/ark:/27020/art0350740",
+    "note": "Deutsche Übersetzung. Das Original liegt in internal/corpus/library/fr/; source.language nennt die Sprache, in der es verfasst wurde."
+  },
+  "snippets": [
+    {
+      "id": "sjdl-oubli",
+      "title": "Vierzehn Millionen vergessene Seelen",
+      "text": "Wie, Sire! Eure Majestät erklärt vor ganz Europa, die gesamte Nation versammeln zu wollen — und vergisst uns im Aufruf!\n\n[...] Vierzehn Millionen Seelen für nichts zu rechnen, wäre ohne Zweifel der Beweis der vollkommensten Unfähigkeit im Rechnen wie in der Gesetzgebung."
+    },
+    {
+      "id": "sjdl-representative",
+      "title": "Eine angeblich vertretende Versammlung",
+      "text": "Wir fragen, ob eine Nationalversammlung, aus der die zahlreichste Klasse ungerecht verbannt ist, vernünftigerweise die vertretende Versammlung eben dieser Nation heißen kann."
+    },
+    {
+      "id": "sjdl-lier",
+      "title": "Gesetze, die nicht binden",
+      "text": "Ob Gesetze, die ohne Wissen und gegen den Willen dieser vierzehn Millionen verworfenen Seelen ergehen, diese binden könnten; ob jene nicht berechtigt sind, sich über die kränkende Übergehung ihrer Person in einer Sache zu beklagen, die sie ebenso angeht."
+    },
+    {
+      "id": "sjdl-tache",
+      "title": "Weil sie Männer sind",
+      "text": "Es ist also, weil sie Männer sind, dass man sie in den Rat der Nation ruft; und uns schließt man aus, weil wir es nicht sind. Welch unwürdige Parteilichkeit! Ist es denn ein schändlicher Makel, als Frau geboren zu sein? Soll es heißen, dass wir unter einer so aufgeklärten Regierung unseres Geschlechts wegen erröten müssen?"
+    },
+    {
+      "id": "sjdl-education",
+      "title": "Eine leichtfertige Erziehung",
+      "text": "Ist es nicht empörend, dass man in uns allein die körperlichen Fähigkeiten pflegt, als wären wir bloß Materie, als hätten wir keine Seele? Ist es nicht beschämend, dass man sich darauf beschränkt, uns Haltung, ebenmäßige Gebärden, gemessenen Schritt, anmutiges Tanzen und melodisches Singen beizubringen — als sähe man in uns nichts als Marionetten und leichtköpfige Hänflinge?"
+    },
+    {
+      "id": "sjdl-universites",
+      "title": "Schulen, Kollegien, Universitäten",
+      "text": "Wir haben zu beantragen, dass Schulen, Kollegien und Universitäten errichtet werden, zu denen wir zugelassen sind, um dort den Unterricht zu erhalten, der zur vollen Entfaltung unserer geistigen Fähigkeiten nötig ist, damit wir, soweit es an uns liegt, zum unsterblichen Werk des allgemeinen Glücks beitragen können."
+    },
+    {
+      "id": "sjdl-sabines",
+      "title": "Ohne die Sabinerinnen",
+      "text": "Rom entstand, das ist wahr, ohne das Wirken der Frauen; aber ohne die Sabinerinnen — was wäre aus Rom geworden? Es wäre fast gleich nach seiner Geburt vom Erdboden verschwunden."
+    },
+    {
+      "id": "sjdl-deesses",
+      "title": "Göttinnen anderer Art",
+      "text": "Ferner öffne Euer Minister die Annalen unserer Vorfahren: er wird sehen, dass einst in unserem Gallien unsere Fürsten, unsere Anführer, unsere Richter keine wichtige Beratung führten, weder für den Frieden noch für den Krieg; dass sie keinen wesentlichen Plan fassten und keinen ausführten, ohne zuvor unser Geschlecht befragt zu haben. Die Männer jener Zeit hielten uns also der großen Angelegenheiten für fähig; sie erwiesen unseren Gaben Achtung; sie waren gerechter als die Männer von heute. Warum? Weil sie weniger hochmütig und weniger tyrannisch waren. Wir waren in ihren Augen ebenso viele Göttinnen — aber Göttinnen anderer Art als die Göttinnen unserer Tage."
+    },
+    {
+      "id": "sjdl-talens-ensevelis",
+      "title": "Begrabene Gaben",
+      "text": "Es kann also nur der männlichen Despotie zuzuschreiben sein, dass wir in dieser allgemeinen Unwissenheit gehalten werden, unter der alle unsere Gaben begraben liegen; nur jener genussvollen Tyrannei der Männer, die aus uns fast ebenso viele Automaten gemacht haben, hübsch genug, um sie zu zerstreuen und zu belustigen."
+    },
+    {
+      "id": "sjdl-divorce",
+      "title": "Über die Scheidung, ohne uns zu hören",
+      "text": "Wir meinen die Frage der Scheidung, über die Vernunft und Natur nicht erlauben zu entscheiden ohne unsere Beteiligung und ohne uns zu hören; denn ginge die Scheidung in Gesetz über, so könnten unsere stets tyrannischen Gesetzgeber ihr Bestimmungen anfügen, die ganz zu unseren Lasten gehen und denen uns zwangsweise zu unterwerfen ungerecht wäre."
+    },
+    {
+      "id": "sjdl-souffrance",
+      "title": "Die Beredsamkeit des Leidens",
+      "text": "Wir allein leiden darunter, und die Beredsamkeit des Leidens ist ergreifender, rührender und heller als die Beredsamkeit der kalten Vernunft. Männer, die unsere Sache zu führen hätten, brächten ihr jene Wärme nicht entgegen, jenes Feuer, das die Wahrheit ans Licht bringt."
+    },
+    {
+      "id": "sjdl-par-tete",
+      "title": "Nicht nach Stand, sondern nach Köpfen",
+      "text": "Es gibt nur eine einzige Gunst, um die wir Eure Majestät inständig zu bitten wagen: dass unsere Stimmen nicht nach Stand, sondern nach Köpfen gezählt werden; denn je mehr wir sind, die sich äußern, desto besser werden unsere Belange erörtert und desto besser werden sie bekannt."
+    },
+    {
+      "id": "sjdl-meme-dignite",
+      "title": "Zu derselben Würde erhoben",
+      "text": "Ist es ruhmvoll für einen Monarchen, über freie Männer zu herrschen, so ist es nicht weniger ruhmvoll, über Frauen zu herrschen, die zu derselben Würde erhoben sind."
+    }
+  ]
+}

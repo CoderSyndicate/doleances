@@ -1,0 +1,42 @@
+{{define "content"}}
+<div class="prose">
+  <h1>{{ .T "mygroups.title" }}</h1>
+  <p class="lede">{{ .T "mygroups.lede" }}</p>
+</div>
+
+{{ if .Groups }}
+<div class="grid">
+  {{ range .Groups }}
+  <article class="card">
+    <div class="card-meta">
+      {{ if .Place }}<span>{{ .Place }}</span>{{ end }}
+      {{ if .Role }}<span class="pill">{{ $.T (printf "role.%s" .Role) }}</span>{{ end }}
+      {{ if not .Visible }}<span class="pill">{{ $.T "mygroups.hidden" }}</span>{{ end }}
+    </div>
+
+    <h2 class="card-title"><a href="/groups/{{ .ID }}">{{ .Name }}</a></h2>
+    {{ if .Description }}<p class="card-text">{{ .Description }}</p>{{ end }}
+
+    <footer class="card-actions">
+      {{ if .Admin }}
+      <a class="button secondary" href="/groups/{{ .ID }}/manage">{{ $.T "manage.title" }}</a>
+      {{ if .Unread }}
+      {{/* The one number worth carrying here: a group's inbox is how it is
+           reached now, and an admin who does not know something is waiting is
+           a group that reads as unreachable. */}}
+      <a href="/groups/{{ .ID }}/manage#messages">
+        <span class="pill">{{ $.T "mygroups.unread" }} {{ .Unread }}</span>
+      </a>
+      {{ end }}
+      {{ end }}
+    </footer>
+  </article>
+  {{ end }}
+</div>
+{{ else }}
+<div class="prose">
+  <p>{{ .T "mygroups.empty" }}</p>
+  <p><a class="button" href="/around-me">{{ .T "nav.around" }}</a></p>
+</div>
+{{ end }}
+{{end}}

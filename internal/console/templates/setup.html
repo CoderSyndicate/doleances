@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+<head>
+<!-- The tab icon, inline rather than linked.
+
+     This page is the one HTML document served on the **maintenance**
+     port, where `/theme/assets/` is not registered — that route belongs
+     to the application mux, and putting it on the maintenance one would
+     add surface to a port that deliberately serves almost nothing. A
+     link there would simply 404, so the mark travels in the page.
+
+     `data:` is allowed by this page's own Content-Security-Policy under
+     img-src, which the device-linking QR code already relies on. -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0IiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IkRvbMOpYW5jZXMiPjxzdHlsZT4gLyogQXNwaGFsdCBvbiBhIGxpZ2h0IHRhYiBiYXI7IGhpLXZpcyBvbiBhIGRhcmsgb25lIOKAlCB0aGUgdmVzdCBzZWVuIGluIHRoZSBkYXJrLCB3aGljaCBpcyB0aGUgd2hvbGUgaWRlYSBvZiB0aGUgaWRlbnRpdHkuICovIHN2ZyB7IGNvbG9yOiAjMTQxNjFhOyB9IEBtZWRpYSAocHJlZmVycy1jb2xvci1zY2hlbWU6IGRhcmspIHsgc3ZnIHsgY29sb3I6ICNlNGZmMWE7IH0gfSA8L3N0eWxlPjxwYXRoIGQ9Ik0xMC43NSwxLjVBMi4yNSwyLjI1LDAsMCwxLDEzLDMuNzV2OS4wMjhoMS41VjMuNzVBMy43NSwzLjc1LDAsMCwwLDEwLjc1LDBILjc1YS43NS43NSwwLDAsMCwwLDEuNUMxLjY2OSwxLjUsMiwxLjgzMSwyLDIuNzV2MTFBMy43NSwzLjc1LDAsMCwwLDUuNzUsMTcuNWg4VjE2aC04QTIuMjUsMi4yNSwwLDAsMSwzLjUsMTMuNzV2LTExQTMuMzkyLDMuMzkyLDAsMCwwLDMuMjg1LDEuNVoiIHRyYW5zZm9ybT0idHJhbnNsYXRlKDQuMjUgMy4yNSkiIGZpbGw9ImN1cnJlbnRDb2xvciIvPjxwYXRoIGQ9Ik03Ljc2NSwxNy41QTMuMjk0LDMuMjk0LDAsMCwwLDEwLjczOCwxNkg3Ljc1NEM5LjMwNywxNiwxMCwxNSwxMCwxMi43NDlhLjc1MS43NTEsMCwwLDEsLjc1MS0uNzVoOGEuNzUxLjc1MSwwLDAsMSwuNzUuNzV2MWEzLjc1NSwzLjc1NSwwLDAsMS0zLjc1LDMuNzVaTTEwLjczOCwxNkgxNS43NUEyLjI1MywyLjI1MywwLDAsMCwxOCwxMy43NDlWMTMuNUgxMS40NzJBNS40LDUuNCwwLDAsMSwxMC43MzgsMTZaTTcsMTYuNzVBLjcyLjcyLDAsMCwxLDcuNzQ5LDE2aDB2MS41QS43MTkuNzE5LDAsMCwxLDcsMTYuNzVaTS43NSw1LjVBLjc1MS43NTEsMCwwLDEsMCw0Ljc1di0yYTIuNzUsMi43NSwwLDEsMSw1LjUsMHYyYS43NTEuNzUxLDAsMCwxLS43NS43NVpNMS41LDIuNzVWNEg0VjIuNzVhMS4yNSwxLjI1LDAsMSwwLTIuNSwwWiIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMi4yNSAzLjI1KSIgZmlsbD0iY3VycmVudENvbG9yIi8+PGcgc3Ryb2tlPSJjdXJyZW50Q29sb3IiIHN0cm9rZS13aWR0aD0iMi4xIiBzdHJva2UtbGluZWNhcD0icm91bmQiPjxwYXRoIGQ9Ik05LjI1IDkuOWg2LjYiLz48cGF0aCBkPSJNOS4yNSAxMy4xaDYuNiIvPjwvZz48L3N2Zz4=">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Doléances — set up authentication</title>
+<style>
+  :root { color-scheme: light dark; }
+  body { font: 16px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+         max-width: 42rem; margin: 0 auto; padding: 2rem 1.25rem; }
+  h1 { font-size: 1.5rem; margin-bottom: .25rem; }
+  .lede { color: #555; margin-top: 0; }
+  label { display: block; margin: 1.25rem 0 .25rem; font-weight: 600; }
+  input[type=text], input[type=url], input[type=password] {
+    width: 100%; padding: .5rem .6rem; font: inherit; box-sizing: border-box; }
+  .hint { font-size: .875rem; color: #666; margin: .25rem 0 0; }
+  button { margin-top: 1.5rem; padding: .6rem 1rem; font: inherit; font-weight: 600; cursor: pointer; }
+  .notice { padding: .75rem 1rem; border-left: 4px solid #888; background: #f4f4f4; margin: 1rem 0; }
+  .bad { border-color: #b3261e; }
+  .warn { border-color: #8a6100; }
+  .good { border-color: #1f6b3a; }
+  code { background: #f0f0f0; padding: .1em .35em; }
+  ul { padding-left: 1.2rem; }
+  @media (prefers-color-scheme: dark) {
+    body { background: #14161a; color: #eee; }
+    .lede, .hint { color: #aaa; }
+    .notice { background: #22262c; }
+    code { background: #22262c; }
+
+  /* The one group of fields that is optional, set apart so it reads as an
+     offer rather than as four more things to fill in. */
+  fieldset {
+    margin: 1.5rem 0;
+    padding: 0 1rem 1rem;
+    border: 1px solid #3a4049;
+    border-radius: 6px;
+  }
+  legend { padding: 0 0.5rem; font-weight: 600; }
+  }
+</style>
+</head>
+<body>
+
+{{ if .Done }}
+  <h1>That is set up.</h1>
+  <div class="notice good">
+    <p><strong>{{ .AdminUsername }}</strong> is this register's first admin and its first
+       curator. They can sign in at the console and add everybody else.</p>
+    {{ if and .TokenOwner (ne .TokenOwner .AdminUsername) }}
+    <p class="hint">Provisioned with <code>{{ .TokenOwner }}</code>'s token, which holds no
+       role here — it was the way in to your directory, not to this register.</p>
+    {{ end }}
+    <p>Staff now authenticate against <code>{{ .InstanceURL }}</code>, through the
+       application <code>{{ .AppName }}</code>. The two groups are
+       <code>{{ .AppName }}_admin</code> and <code>{{ .AppName }}_curator</code>.</p>
+    {{ if .OwnToken }}
+    <p><strong>The token you pasted is no longer needed and may expire.</strong> This
+       console minted one of its own, <code>{{ .OwnToken }}</code>, which does not expire
+       — find it in authentik under <em>Directory → Tokens and App passwords</em>. Revoking
+       it stops every sign-in here, and nothing else.</p>
+    {{ end }}
+  </div>
+
+  {{ if .AdminLink }}
+  <div class="notice good">
+    <h2>Your own way in</h2>
+    <p>You can already sign in with your authentik account, so this is an offer rather than
+       something you need: follow it to set up a passkey for yourself, the same way everybody
+       you invite will.</p>
+    <p><code>{{ .AdminLink }}</code></p>
+    <p><strong>Shown here once.</strong> Nothing keeps a copy — and you can mint another for
+       yourself or anybody else from the console's people page.</p>
+  </div>
+  {{ end }}
+
+  {{ if not .RecoveryReady }}
+  <div class="notice warn">
+    <p><strong>Nobody else can be onboarded yet.</strong> This authentik instance has no
+       recovery flow, and a recovery link is how a new person is given a way in — there is
+       no password and nothing is emailed.</p>
+    <p>Add a recovery flow and set it as the brand's default, then invite people from the
+       console.</p>
+  </div>
+  {{ end }}
+
+  <div class="notice">
+    <p><strong>Close this door.</strong> Restart the console without
+       <code>--superuser</code>. The setup page is not registered on a console that is
+       already configured, so a plain restart is all it takes.</p>
+  </div>
+
+{{ else }}
+
+  <h1>Set up authentication</h1>
+  <p class="lede">This console has no identity provider yet. Point it at your authentik.</p>
+
+  {{ if .Reprovision }}
+  <div class="notice warn">
+    <p><strong>This console already has one.</strong> Finishing here replaces it: the staff
+       who sign in today will be answering to whichever directory you name below, and
+       whoever holds the token you paste becomes this register's admin.</p>
+  </div>
+  {{ end }}
+
+  {{ with .Error }}
+  <div class="notice bad"><p>{{ . }}</p></div>
+  {{ end }}
+
+  {{ with .Missing }}
+  <div class="notice warn">
+    <p>That instance is missing:</p>
+    <ul>{{ range . }}<li>{{ . }}</li>{{ end }}</ul>
+    <p>None of these is created from here. A flow is shared with every other application
+       in your directory, and a tool asked to add itself has no business rewriting how
+       everybody else signs in.</p>
+  </div>
+  {{ end }}
+
+  <form method="post" action="/setup">
+    <label for="app_name">Name in authentik</label>
+    <input type="text" id="app_name" name="app_name" required
+           pattern="[a-z0-9]([a-z0-9_-]*[a-z0-9])?" value="{{ .AppName }}">
+    <p class="hint">
+      The application's slug, and the prefix both group names are built from:
+      <code>{{ .AppName }}_admin</code> and <code>{{ .AppName }}_curator</code>.
+      <br>Give a second installation on the same authentik a different name, or it
+      will find the first one's groups, join them, and quietly hand its curators
+      power over somebody else's register.
+      <br>Lowercase letters and digits, with <code>-</code> or <code>_</code> inside.
+    </p>
+
+    <label for="instance_url">authentik instance</label>
+    <input type="url" id="instance_url" name="instance_url" required
+           placeholder="https://authentik.example" value="{{ .InstanceDefault }}">
+    <p class="hint">The address you open authentik at. A trailing slash or an
+       <code>/api/v3</code> on the end are both fine.
+       {{ if .InstanceDefault }}
+       <br>Filled in from this deployment's configuration — change it if it is wrong.
+       {{ end }}</p>
+
+    <label for="token">API token</label>
+    <input type="password" id="token" name="token" required autocomplete="off">
+    <p class="hint">
+      Make one in authentik: <strong>Directory → Tokens and App passwords → Create</strong>,
+      intent <em>API Token</em>. There is no way around this step — a first run cannot sign
+      in by OIDC, because the application it would sign in against is what this creates.
+      <br><strong>It is only needed for setup, so let it expire.</strong> This console does
+      not keep it: provisioning mints a non-expiring token of its own, named for this
+      register, which is what it uses afterwards. authentik's thirty-minute default is
+      right for what you are making here.
+      <br><strong>This token can make users in your directory.</strong> It is stored
+      encrypted and never shown again.
+    </p>
+
+    <fieldset>
+      <legend>The first admin</legend>
+      <p class="hint">
+        Who this register answers to. <strong>Leave these blank and it is whoever owns the
+        token</strong> — which on a fresh authentik is <code>akadmin</code>, a bootstrap
+        account rather than a person. Fill them in to name yourself, or somebody else:
+        an existing account is adopted as it is, and a new one is created. Either way they
+        get both roles and a one-time link to set up a passkey.
+      </p>
+
+      <label for="admin_username">Identifier</label>
+      <input type="text" id="admin_username" name="admin_username" autocomplete="off"
+             value="{{ .AdminUsername }}">
+      <p class="hint">Their authentik username. This is what the audit log records.</p>
+
+      <label for="admin_name">Name</label>
+      <input type="text" id="admin_name" name="admin_name" value="{{ .AdminName }}">
+
+      <label for="admin_email">Email address</label>
+      <input type="email" id="admin_email" name="admin_email" value="{{ .AdminEmail }}">
+      <p class="hint">
+        Stored on the directory record as an identifier. <strong>Nothing is sent to it</strong>
+        — there is no mail server here, which is why the way in is a link you pass on
+        yourself. Ignored when the account already exists.
+      </p>
+    </fieldset>
+
+    <label for="console_url">This console's public address</label>
+    <input type="url" id="console_url" name="console_url" required value="{{ .ConsoleURL }}">
+    <p class="hint">The redirect is registered as <code>{{ .ConsoleURL }}/auth/callback</code>
+       and matched exactly, so this has to be the address staff really reach the console at.</p>
+
+    <button type="submit">
+      {{ if .Reprovision }}Replace the identity provider{{ else }}Set up{{ end }}
+    </button>
+  </form>
+
+  <div class="notice">
+    <p>What this creates in your directory: an OAuth2 provider, an application, and two
+       groups — <code>{{ .AppName }}_admin</code> and <code>{{ .AppName }}_curator</code>.
+       Nothing else, and nothing instance-wide.</p>
+  </div>
+
+{{ end }}
+
+</body>
+</html>

@@ -1,0 +1,123 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CGO_ENABLED: "0"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - name: Verify modules are tidy
+        run: |
+          go mod tidy
+          git diff --exit-code -- go.mod go.sum
+      - name: Vet
+        run: go vet ./...
+      - name: Test
+        # The race detector is built on cgo, so this one step opts out of the
+        # workflow-wide CGO_ENABLED=0. That setting is about the **binaries**
+        # this project ships — static, distroless, no libc — and tests are not
+        # one of those. Nothing about which code runs changes: the SQLite
+        # driver is pure Go by choice, not by build constraint.
+        env:
+          CGO_ENABLED: "1"
+        run: go test -race -coverprofile=coverage.out ./...
+      - uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage.out
+
+  # The schema against the engine production actually runs.
+  #
+  # Every other job here uses SQLite, because `--database-driver` defaults to
+  # it and a file is free. That is also how a deployment got taken down: five
+  # fields pinned `type:blob`, which SQLite has and PostgreSQL does not, so
+  # `AutoMigrate` died on its first statement and the backend crash-looped.
+  # Nothing had ever run the schema against PostgreSQL outside a deployed
+  # environment, so the first thing to find out was the deployment.
+  #
+  # A container and an empty database are enough, and it costs under a minute.
+  migrate:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: doleances
+          POSTGRES_PASSWORD: doleances
+          POSTGRES_DB: doleances_test
+        ports: ["5432:5432"]
+        # Without this the job races the server's own startup and fails on a
+        # connection refused that looks like a schema problem.
+        options: >-
+          --health-cmd "pg_isready -U doleances -d doleances_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - name: Migrate and round-trip against PostgreSQL
+        env:
+          DOLEANCES_TEST_POSTGRES_DSN: >-
+            postgres://doleances:doleances@127.0.0.1:5432/doleances_test?sslmode=disable
+        # -count=1 so a cached pass from the SQLite job cannot stand in for a
+        # run that never talked to the server.
+        run: go test -count=1 -run Postgres -v ./internal/store/
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      # Pinned, both of them, because "latest" is what broke this.
+      #
+      # The action's v6 line only ever resolves golangci-lint v1, whose last
+      # release is built with Go 1.24 — and a linter refuses to run against a
+      # module targeting a newer Go than it was built with, which this one does
+      # (go 1.26.0). So "latest" quietly meant "too old", and the job had been
+      # failing on `can't load config` rather than on anything in the code.
+      #
+      # A pinned pair says what actually ran when a finding appeared, and
+      # cannot drift into that again without somebody choosing it.
+      - uses: golangci/golangci-lint-action@v9
+        with:
+          version: v2.14.0
+
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        service: [backend, console, frontend]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
+      - name: Build ${{ matrix.service }}
+        run: go build -o /dev/null ./cmd/${{ matrix.service }}
