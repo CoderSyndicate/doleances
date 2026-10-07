@@ -1,0 +1,35 @@
+{
+  "source": {
+    "title": "Cahier de doléances de la ville d'Houdan",
+    "period": "1789",
+    "region": "Houdan, bailliage de Montfort-l'Amaury",
+    "latitude": 48.7906,
+    "longitude": 1.6017,
+    "language": "fr",
+    "reference": "Cahier manuscrit, mars 1789 — transcription d'après photographies, non collationnée",
+    "url": "",
+    "note": "Cahier primaire de la ville d'Houdan, clos et signé en mars 1789. Non imprimé aux Archives parlementaires, qui ne donnent que le cahier du bailliage de Montfort-l'Amaury (t. IV, 1879, p. 37-43). Une édition existe : André Paris, supplément sur Houdan et Sonchamp, Mémoires de la Société archéologique de Rambouillet et des Yvelines, t. 23, 1970, p. 161-168 — à confronter. Transcription complète : .local/data/1789-houdan-cahier-manuscrit.md"
+  },
+  "snippets": [
+    {
+      "id": "houdan-fardeau",
+      "title": "Le fardeau accablant",
+      "text": "Les habitans d'houdan assemblés et soussignés, réclament contre le fardeau accablant d'impôts, et de charges de toutes espèces : taille, capitation, vingtièmes, industrie, corvées, aydes, gabelles, contrôlle, franc-fief, auxquels l'activité financière a donné tous les accroissemens et extensions possibles."
+    },
+    {
+      "id": "houdan-impot-unique",
+      "title": "Un seul impôt, sur tous les biens",
+      "text": "Votent particulièrement pour la supression la plus prochaine des aydes et des gabelles ; pour qu'il soit établi un impôt territorial et général, à perce[voir] en argent sur toutes espèces de biens appartenants soit au Clergé, aux nobles, privilégiés et autres, pour supléer non seulement au produit desdits deux impôts les plus desastreux, mais encore à ceux de ceux dont on jugerait la supression nécessaire au bien être et à la tranquilité de la société ; offrant de reverser le produit dudit impôt directement au trésor Royal et sans frais."
+    },
+    {
+      "id": "houdan-depenses",
+      "title": "Imposer la dépense, non la terre seule",
+      "text": "Ils votent pareillement à ce que les personnes ne possédant aucuns biens fonds, comme commerçans, banquiers, capitalistes et rentiers, soient imposés à proportion de leurs dépenses et logements."
+    },
+    {
+      "id": "houdan-ble",
+      "title": "Le blé hors de portée",
+      "text": "Que le blé, au prix excessif où il est présentement de 40 à 50 [livres] le septier pesant 300 [livres], est hors la portée du peuple en général, et ne lui permet pas de pouvoir vivre, ne pouvant y atteindre par ses journées et salaires ; ce qui est une plainte frappante à laquelle les bontés du Monarque peuvent pourvoir."
+    }
+  ]
+}

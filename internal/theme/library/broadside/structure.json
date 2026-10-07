@@ -1,0 +1,24 @@
+{
+  "dimension": {
+    "radius": {"$type":"dimension","$value":"0"},
+    "border-width": {"$type":"dimension","$value":"2px"},
+    "space-xs": {"$type":"dimension","$value":"0.25rem"},
+    "space-sm": {"$type":"dimension","$value":"0.5rem"},
+    "space-md": {"$type":"dimension","$value":"0.75rem"},
+    "space-lg": {"$type":"dimension","$value":"1.5rem"},
+    "card-padding-y": {"$type":"dimension","$value":"0.875rem"},
+    "card-padding-x": {"$type":"dimension","$value":"1rem"},
+    "grid-min": {"$type":"dimension","$value":"340px"},
+    "measure": {"$type":"dimension","$value":"62ch"},
+    "font-size": {"$type":"dimension","$value":"17px"},
+    "title-tracking": {"$type":"dimension","$value":"0.01em"}
+  },
+  "fontFamily": {
+    "font-ui": {"$type":"fontFamily","$value":["Iowan Old Style","Palatino Linotype","Palatino","Georgia","serif"]},
+    "font-historical": {"$type":"fontFamily","$value":["Iowan Old Style","Palatino Linotype","Palatino","Georgia","serif"]}
+  },
+  "number": {
+    "line-height": {"$type":"number","$value":1.7},
+    "title-weight": {"$type":"number","$value":700}
+  }
+}

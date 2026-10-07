@@ -1,0 +1,134 @@
+{
+  "light": {
+    "bg": {
+      "$type": "color",
+      "$value": "#e8e4dc"
+    },
+    "surface": {
+      "$type": "color",
+      "$value": "#f6f4ef"
+    },
+    "border": {
+      "$type": "color",
+      "$value": "#c4bdae"
+    },
+    "text": {
+      "$type": "color",
+      "$value": "#14161a"
+    },
+    "text-muted": {
+      "$type": "color",
+      "$value": "#5a5a55"
+    },
+    "accent": {
+      "$type": "color",
+      "$value": "#c8281c"
+    },
+    "accent-deep": {
+      "$type": "color",
+      "$value": "#a81f14"
+    },
+    "on-accent": {
+      "$type": "color",
+      "$value": "#ffffff"
+    },
+    "stripe-light": {
+      "$type": "color",
+      "$value": "#ef4135"
+    },
+    "stripe-dark": {
+      "$type": "color",
+      "$value": "#0055a4"
+    },
+    "paper": {
+      "$type": "color",
+      "$value": "#ddd7c8"
+    },
+    "paper-text": {
+      "$type": "color",
+      "$value": "#26231c"
+    },
+    "paper-border": {
+      "$type": "color",
+      "$value": "#bfb6a1"
+    },
+    "error": {
+      "$type": "color",
+      "$value": "#a32018"
+    },
+    "warn": {
+      "$type": "color",
+      "$value": "#8a5a00"
+    },
+    "good": {
+      "$type": "color",
+      "$value": "#2f5e3a"
+    }
+  },
+  "dark": {
+    "bg": {
+      "$type": "color",
+      "$value": "#0f1116"
+    },
+    "surface": {
+      "$type": "color",
+      "$value": "#181b22"
+    },
+    "border": {
+      "$type": "color",
+      "$value": "#2e333d"
+    },
+    "text": {
+      "$type": "color",
+      "$value": "#f1ece0"
+    },
+    "text-muted": {
+      "$type": "color",
+      "$value": "#9aa0ab"
+    },
+    "accent": {
+      "$type": "color",
+      "$value": "#c8281c"
+    },
+    "accent-deep": {
+      "$type": "color",
+      "$value": "#a81f14"
+    },
+    "on-accent": {
+      "$type": "color",
+      "$value": "#ffffff"
+    },
+    "stripe-light": {
+      "$type": "color",
+      "$value": "#ef4135"
+    },
+    "stripe-dark": {
+      "$type": "color",
+      "$value": "#0055a4"
+    },
+    "paper": {
+      "$type": "color",
+      "$value": "#1d1f18"
+    },
+    "paper-text": {
+      "$type": "color",
+      "$value": "#e6dcc4"
+    },
+    "paper-border": {
+      "$type": "color",
+      "$value": "#3a3a2c"
+    },
+    "error": {
+      "$type": "color",
+      "$value": "#f28b82"
+    },
+    "warn": {
+      "$type": "color",
+      "$value": "#e8b44c"
+    },
+    "good": {
+      "$type": "color",
+      "$value": "#7fbf8f"
+    }
+  }
+}

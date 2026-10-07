@@ -1,0 +1,177 @@
+{{define "content"}}
+<div class="prose" id="people">
+  <h1>{{ .T "people.title" }}</h1>
+  <p class="lede">{{ .T "people.lede" }}</p>
+
+  {{ with .Error }}<p class="form-error" role="alert">{{ . }}</p>{{ end }}
+  {{ with .Notice }}<p class="form-notice" role="status">{{ . }}</p>{{ end }}
+
+  {{/* Shown once, straight after somebody is created. The console keeps no
+       copy: a page an admin can revisit to re-read somebody else's way in is
+       a page anybody who reaches this console can revisit. */}}
+  {{ if .RecoveryLink }}
+  <div class="card">
+    <h2 class="card-title">{{ .T "people.added_title" }}</h2>
+    <p>{{ .T "people.added_note" }}</p>
+    <p><code class="receipt-value">{{ .RecoveryLink }}</code></p>
+    <p class="section-note">{{ .T "people.added_once" }}</p>
+  </div>
+  {{ end }}
+
+  {{/* A warning rather than a notice: nothing here has gone wrong yet, and
+       nobody can be onboarded until it is fixed. */}}
+  {{ if not .RecoveryReady }}
+  <p class="form-warning" role="status">{{ .T "people.no_recovery" }}</p>
+  {{ end }}
+</div>
+
+{{/* The one control that acts on the table as a whole rather than on a row,
+     which is what the bar above a table is for. */}}
+<div class="table-bar">
+  <a class="button small" href="#add-panel">
+    {{ template "icon-plus" }}<span>{{ .T "people.add_title" }}</span>
+  </a>
+</div>
+
+{{ if .People }}
+<table class="data-table">
+  <thead>
+    <tr>
+      <th scope="col">{{ .T "people.person" }}</th>
+      <th scope="col">{{ .T "people.admin" }}</th>
+      <th scope="col">{{ .T "people.curator" }}</th>
+      <th scope="col">{{ .T "people.actions" }}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{ range .People }}
+    <tr>
+      <td>
+        <strong>{{ .Name }}</strong><br>
+        <span class="section-note">{{ .Username }}{{ if .Email }} · {{ .Email }}{{ end }}</span>
+        {{ if .Self }}<br><span class="section-note">{{ $.T "people.this_is_you" }}</span>{{ end }}
+
+        {{/* The forms themselves, empty and out of the way: a <form> cannot
+             span table cells, and a checkbox in the Administration column that
+             belonged to a form in the Actions column is exactly what the
+             `form` attribute is for. The alternative was one cell with
+             colspan, which is what this table had — and it put every control
+             under the Administration heading with nothing under Curation,
+             so the headers described a layout that was not there. */}}
+        <form id="roles-{{ .PK }}" method="post" action="/settings/people"></form>
+        {{ if not .Self }}
+        <form id="relink-{{ .PK }}" method="post" action="/settings/people"></form>
+        {{ end }}
+      </td>
+
+      <td>
+        <label><input type="checkbox" form="roles-{{ .PK }}" name="role_admin" value="1"
+                      {{ if .Admin }}checked{{ end }}>
+          {{ $.T "people.admin" }}</label>
+      </td>
+      <td>
+        <label><input type="checkbox" form="roles-{{ .PK }}" name="role_curator" value="1"
+                      {{ if .Curator }}checked{{ end }}>
+          {{ $.T "people.curator" }}</label>
+      </td>
+
+      <td>
+        <div class="row-actions">
+          <input type="hidden" form="roles-{{ .PK }}" name="pk" value="{{ .PK }}">
+          <button class="button small secondary" type="submit"
+                  form="roles-{{ .PK }}" name="update" value="1">
+            {{ $.T "people.save_roles" }}
+          </button>
+
+          {{ if not .Self }}
+          {{/* A fresh single-use link, for somebody whose invitation expired,
+               was mislaid, or was never mintable. */}}
+          <input type="hidden" form="relink-{{ .PK }}" name="pk" value="{{ .PK }}">
+          <input type="hidden" form="relink-{{ .PK }}" name="username" value="{{ .Username }}">
+          <button class="button small secondary" type="submit"
+                  form="relink-{{ .PK }}" name="relink" value="1">
+            {{ $.T "people.new_link" }}
+          </button>
+
+          {{/* Removal asks first, in <details> rather than a script, because
+               this page works with none — and it asks because the control is
+               an icon, which is quick to press and says little about what
+               follows. Not drawn on your own row; the handler refuses it
+               there too, since a hidden control is not a guard. */}}
+          <details class="confirm">
+            <summary class="icon-button danger" title="{{ $.T "people.remove" }}"
+                     aria-label="{{ $.T "people.remove" }}">{{ template "icon-bin" }}</summary>
+            <form method="post" action="/settings/people" class="confirm-body">
+              <input type="hidden" name="pk" value="{{ .PK }}">
+              <input type="hidden" name="username" value="{{ .Username }}">
+              <p class="section-note">{{ $.T "people.remove_confirm" }}</p>
+              <button class="button small danger" type="submit" name="remove" value="1">
+                {{ $.T "people.remove_do" }}
+              </button>
+            </form>
+          </details>
+          {{ end }}
+        </div>
+      </td>
+    </tr>
+    {{ end }}
+  </tbody>
+</table>
+{{ else }}
+<div class="prose"><p>{{ .T "people.empty" }}</p></div>
+{{ end }}
+
+{{/* Adding somebody is an occasional act and the list is what this page is
+     for, so the form waits behind a button. The same panel the frontend uses:
+     a fragment link opens it, and the server forces it open when a refusal has
+     to come back with what was typed still in it — otherwise the redirect that
+     carries the answer would also close the panel and empty it. */}}
+{{/* Where closing goes, and why it is not always a fragment.
+     A fragment is enough while the panel is open because the fragment *is*
+     what opened it. It is not enough once the server has forced it open with
+     a class: no fragment can remove a class, so a close link that only
+     changed the fragment left the panel shut over nothing — which is exactly
+     what a refused invite did. Then closing has to be a fresh request for the
+     page without the query that reopened it. */}}
+{{ $close := "#people" }}{{ if .AddOpen }}{{ $close = "/settings/people" }}{{ end }}
+
+<div class="overlay{{ if .AddOpen }} open{{ end }}" id="add-panel"
+     role="dialog" aria-labelledby="add-panel-title" tabindex="-1">
+  <a class="overlay-backdrop" href="{{ $close }}" aria-label="{{ .T "people.close" }}"></a>
+
+  <div class="overlay-panel">
+    <div class="overlay-header">
+      <h2 id="add-panel-title">{{ .T "people.add_title" }}</h2>
+      <a class="icon-button" href="{{ $close }}"
+         title="{{ .T "people.close" }}" aria-label="{{ .T "people.close" }}">
+        {{ template "icon-close" }}
+      </a>
+    </div>
+
+    {{/* No email is sent and no password is set: authentik has no flag that
+         forces a password change at next sign-in, so a temporary one would be
+         a credential the admin knows and that outlives the first login. */}}
+    <p class="section-note">{{ .T "people.add_note" }}</p>
+
+    <form method="post" action="/settings/people">
+      <p><label>{{ .T "people.name" }}
+        <input type="text" name="name" required value="{{ .Draft.Name }}"></label></p>
+      <p><label>{{ .T "people.username" }}
+        <input type="text" name="username" required autocomplete="off"
+               value="{{ .Draft.Username }}"></label></p>
+      <p><label>{{ .T "people.email" }}
+        <input type="email" name="email" value="{{ .Draft.Email }}"></label>
+        <span class="section-note">{{ .T "people.email_note" }}</span></p>
+
+      <p>
+        <label><input type="checkbox" name="role_admin" value="1"
+                      {{ if .Draft.Admin }}checked{{ end }}> {{ .T "people.admin" }}</label>
+        <label><input type="checkbox" name="role_curator" value="1"
+                      {{ if .Draft.Curator }}checked{{ end }}> {{ .T "people.curator" }}</label>
+      </p>
+
+      <button class="button" type="submit" name="invite" value="1">{{ .T "people.add" }}</button>
+    </form>
+  </div>
+</div>
+{{end}}

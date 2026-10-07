@@ -1,0 +1,24 @@
+{{define "content"}}
+<div class="prose">
+  <h1>{{ .T "permalink.title" }}</h1>
+  {{/* The reporter first, because the note below it is written to the author
+       — "exactly as you wrote it" — and the person who just pressed report is
+       not the author. Both states are "not in the register"; only one of them
+       is somebody being reassured about their own words. */}}
+  {{ if .Reported }}
+  <p class="lede">{{ .T "permalink.reported" }}</p>
+  <p class="section-note">{{ .T "permalink.reported_note" }}</p>
+  {{ else if .Pending }}
+  <p class="lede">{{ .T "permalink.pending" }}</p>
+  <p class="section-note">{{ .T "permalink.pending_note" }}</p>
+  {{ else }}
+  <p class="lede">{{ .T "permalink.published" }}</p>
+  {{ end }}
+</div>
+
+{{ template "message-card" dict "Card" .Message "Page" . }}
+
+<div class="prose">
+  <p class="section-note">{{ .T "permalink.delete_note" }}</p>
+</div>
+{{end}}

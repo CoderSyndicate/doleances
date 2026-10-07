@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"
+     role="img" aria-label="Doléances">
+  <!--
+    The tab icon: a cahier on the vest's own yellow.
+
+    # Why this one carries colour when the logo does not
+
+    A favicon has no document to inherit from, so `currentColor` in it is not
+    "the palette" — it is black, always, because black is what the `color`
+    property initialises to. Drawn that way this mark was invisible against a
+    dark tab bar, which is most browsers in dark mode and was the first live
+    report of it. A favicon is the one image here that is shown on somebody
+    else's surface, in a colour nobody tells us, so it has to bring its own.
+
+    So it is black ink on hi-vis yellow, which is the project's own contrast
+    rule applied where it is needed most: legible on a white tab bar and on a
+    black one, because the tile supplies the ground either way.
+
+    The two values are written out rather than taken from a token, and that is
+    correct rather than an oversight. A token is a thing a theme can change,
+    and this file is shipped as bytes to a browser that will cache it in a
+    tab strip for months.
+  -->
+  <rect width="24" height="24" rx="5" fill="#e4ff1a"/>
+  <path d="M10.75,1.5A2.25,2.25,0,0,1,13,3.75v9.028h1.5V3.75A3.75,3.75,0,0,0,10.75,0H.75a.75.75,0,0,0,0,1.5C1.669,1.5,2,1.831,2,2.75v11A3.75,3.75,0,0,0,5.75,17.5h8V16h-8A2.25,2.25,0,0,1,3.5,13.75v-11A3.392,3.392,0,0,0,3.285,1.5Z"
+        transform="matrix(0.72 0 0 0.72 6.42 5.7)" fill="#14161a"/>
+  <path d="M7.765,17.5A3.294,3.294,0,0,0,10.738,16H7.754C9.307,16,10,15,10,12.749a.751.751,0,0,1,.751-.75h8a.751.751,0,0,1,.75.75v1a3.755,3.755,0,0,1-3.75,3.75ZM10.738,16H15.75A2.253,2.253,0,0,0,18,13.749V13.5H11.472A5.4,5.4,0,0,1,10.738,16ZM7,16.75A.72.72,0,0,1,7.749,16h0v1.5A.719.719,0,0,1,7,16.75ZM.75,5.5A.751.751,0,0,1,0,4.75v-2a2.75,2.75,0,1,1,5.5,0v2a.751.751,0,0,1-.75.75ZM1.5,2.75V4H4V2.75a1.25,1.25,0,1,0-2.5,0Z"
+        transform="matrix(0.72 0 0 0.72 4.98 5.7)" fill="#14161a"/>
+  <path d="M10.02 10.49H14.77" stroke="#14161a" stroke-width="1.512" stroke-linecap="round"/>
+  <path d="M10.02 12.79H14.77" stroke="#14161a" stroke-width="1.512" stroke-linecap="round"/>
+</svg>

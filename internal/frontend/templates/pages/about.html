@@ -1,0 +1,97 @@
+{{define "content"}}
+{{/* The explanation, in sections a reader can jump between.
+
+     It was one run of paragraphs under a single heading, which read as an
+     essay and left the right half of the page empty. Sections give it a
+     spine; the table of contents beside it is that spine made visible, and it
+     stays in view while the page scrolls — position: sticky, no script — so
+     wherever somebody is in the argument they can see its shape and move.
+
+     The ids are stable on purpose: they are addresses other people will link
+     to ("#refused" is the one that will be quoted), so they are English and
+     short and do not change with the reader's language. */}}
+<div class="about">
+  <nav class="toc" aria-label="{{ .T "about.toc" }}">
+    <p class="toc-title">{{ .T "about.toc" }}</p>
+    <ol>
+      <li><a href="#then">{{ .T "about.section_then" }}</a></li>
+      <li><a href="#again">{{ .T "about.section_again" }}</a></li>
+      <li><a href="#buried">{{ .T "about.section_buried" }}</a></li>
+      <li><a href="#now">{{ .T "about.section_now" }}</a></li>
+      <li><a href="#register">{{ .T "about.section_register" }}</a></li>
+      <li><a href="#collected">{{ .T "about.section_collected" }}</a></li>
+      <li><a href="#refused">{{ .T "about.section_refused" }}</a></li>
+      <li><a href="#who">{{ .T "about.section_who" }}</a></li>
+      <li><a href="#trust">{{ .T "about.section_trust" }}</a></li>
+      <li><a href="#open">{{ .T "footer.title" }}</a></li>
+    </ol>
+  </nav>
+
+  <div class="prose">
+    <h1>{{ .T "about.title" }}</h1>
+    <p class="lede">{{ .T "about.lede" }}</p>
+
+    <h2 id="then">{{ .T "about.section_then" }}</h2>
+    <p>{{ .T "about.history" }}</p>
+
+    <h2 id="again">{{ .T "about.section_again" }}</h2>
+    <p>{{ .T "about.recent" }}</p>
+    <p>{{ .T "about.arc" }}</p>
+
+    <h2 id="buried">{{ .T "about.section_buried" }}</h2>
+    <p>{{ .T "about.buried" }}</p>
+
+    {{/* Its own year, beside 1789 and 2018, because it is the same act a
+         third time and not a footnote to the second. It sits after what
+         became of them and before what this register does: the pattern, then
+         the pattern repeating, then the answer.
+
+         Dated and named on purpose. A claim about a serving minister and a
+         platform that is up this week has to be checkable, or it is the kind
+         of assertion this project refuses from everybody else. */}}
+    <h2 id="now">{{ .T "about.section_now" }}</h2>
+    <p>{{ .T "about.buried_now" }}</p>
+
+    <h2 id="register">{{ .T "about.section_register" }}</h2>
+    <p>{{ .T "about.today" }}</p>
+    <p>{{ .T "about.purpose" }}</p>
+    {{/* Why this shape answers what the section above describes. The claim is
+         structural on purpose: every other paragraph here can be checked, and
+         an argument that rested on us being better people could not be. */}}
+    <p>{{ .T "about.why" }}</p>
+
+    <h2 id="collected">{{ .T "about.section_collected" }}</h2>
+    <p>{{ .T "about.privacy" }}</p>
+
+    <h2 id="refused">{{ .T "about.section_refused" }}</h2>
+    <p>{{ .T "about.refused" }}</p>
+    <p>{{ .T "about.refused_line" }}</p>
+
+    <h2 id="who">{{ .T "about.section_who" }}</h2>
+    <p>{{ .T "about.who" }}</p>
+    <p>{{ .T "about.who_why" }}</p>
+    <p>{{ .T "about.who_gilets" }}</p>
+    <p>{{ .T "about.who_curators" }}</p>
+
+    {{/* The question a reader is actually asking, as the heading — and the
+         answer is not a promise but the three things anybody can check for
+         themselves. It is a section of its own rather than the tail of
+         "who we are" because the two are different questions: one is about
+         people, this one is about what holds whoever the people turn out to
+         be. */}}
+    <h2 id="trust">{{ .T "about.section_trust" }}</h2>
+    <p>{{ .T "about.trust" }}</p>
+    {{/* The strongest of the three, because it is the only one that can be
+         checked against a decision rather than against a file. */}}
+    <p>{{ .T "about.trust_dropped" }} <a href="/dropped">{{ .T "dropped.title" }}</a></p>
+
+    {{/* The same paragraphs the footer shows under every other page. Here
+         they are part of the argument rather than a coda to it, so the
+         layout leaves its footer off this page — see page.InlinesFooter. */}}
+    <h2 id="open">{{ .T "footer.title" }}</h2>
+    {{ template "openness" . }}
+
+    <a class="button" href="/doleance">{{ .T "cta.write" }}</a>
+  </div>
+</div>
+{{end}}

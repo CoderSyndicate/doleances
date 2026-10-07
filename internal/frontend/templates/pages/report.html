@@ -1,0 +1,28 @@
+{{define "content"}}
+<div class="prose">
+  <h1>{{ .T "report.title" }}</h1>
+  <p class="lede">{{ .T "report.lede" }}</p>
+  {{/* What it does and what it does not. Somebody arriving here by mis-clicking
+       an icon needs to be able to leave without worrying, and somebody who
+       meant it needs to know they are not deleting anybody's words. */}}
+  <p>{{ .T "report.what" }}</p>
+  <p class="section-note">{{ .T "report.not" }}</p>
+</div>
+
+{{/* The doléance itself, whole and unaltered. The decision is about these
+     words, and asking for it without showing them would be asking somebody to
+     confirm a click rather than a judgement. */}}
+{{ template "message-card" dict "Card" .Message "Page" . }}
+
+<div class="prose">
+  <form method="post" action="/doleance/{{ .Message.ID }}/report">
+    <div class="drawer-actions">
+      <button class="button" type="submit">{{ .T "report.confirm" }}</button>
+      {{/* The way out is a link and is the plainer of the two, because the
+           person most likely to be on this page is the one who did not mean
+           to be. */}}
+      <a class="button secondary" href="/doleance/{{ .Message.ID }}">{{ .T "report.cancel" }}</a>
+    </div>
+  </form>
+</div>
+{{end}}

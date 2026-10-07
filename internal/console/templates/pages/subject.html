@@ -1,0 +1,65 @@
+{{define "content"}}
+<div class="prose">
+  <p class="section-note"><a href="/subjects">&larr; {{ .T "vocabulary.title" }}</a></p>
+  <h1 id="subject-label">&nbsp;</h1>
+  <p id="subject-meta" class="section-note"></p>
+</div>
+
+<p id="status" class="section-note" role="status" aria-live="polite"></p>
+
+<section class="prose">
+  <h2>{{ .T "subject.hierarchy" }}</h2>
+  <p class="section-note">{{ .T "subject.hierarchy_note" }}</p>
+</section>
+<div id="relations" class="themes"></div>
+
+<section class="prose">
+  <h2>{{ .T "subject.entity" }}</h2>
+  <p class="section-note">{{ .T "subject.entity_note" }}</p>
+</section>
+<div id="entity" class="themes"></div>
+
+<div class="register-filters prose">
+  <label for="wd-search">{{ .T "subject.search" }}
+    <span class="hint">{{ .T "subject.search_hint" }}</span>
+  </label>
+  <input id="wd-search" type="search" autocomplete="off">
+  <div class="theme-bar">
+    <button id="wd-go" class="button" type="button">{{ .T "subject.search_go" }}</button>
+  </div>
+</div>
+<div id="candidates" class="themes"></div>
+
+<noscript>
+  <p class="empty">{{ .T "vocabulary.noscript" }}</p>
+</noscript>
+
+<script nonce="{{ .Nonce }}">
+  window.subjectId = {{ .SubjectID }};
+  window.subjectStrings = {
+    messages: {{ .T "vocabulary.messages" }},
+    unused: {{ .T "vocabulary.unused" }},
+    aliases: {{ .T "vocabulary.aliases" }},
+    noEntity: {{ .T "vocabulary.no_entity" }},
+    detach: {{ .T "subject.detach" }},
+    detachConfirm: {{ .T "subject.detach_confirm" }},
+    parents: {{ .T "subject.parents" }},
+    children: {{ .T "subject.children" }},
+    none: {{ .T "subject.none" }},
+    unlink: {{ .T "subject.unlink" }},
+    self: {{ .T "subject.self" }},
+    asParent: {{ .T "subject.as_parent" }},
+    asChild: {{ .T "subject.as_child" }},
+    held: {{ .T "subject.held" }},
+    matchedAlias: {{ .T "subject.matched_alias" }},
+    read: {{ .T "subject.read" }},
+    searching: {{ .T "subject.searching" }},
+    noCandidates: {{ .T "subject.no_candidates" }},
+    attached: {{ .T "subject.attached" }},
+    linked: {{ .T "subject.linked" }},
+    working: {{ .T "vocabulary.working" }},
+    failed: {{ .T "vocabulary.failed" }}
+  };
+</script>
+<script src="/static/subject.js?v={{ .AssetVersion }}"></script>
+{{end}}

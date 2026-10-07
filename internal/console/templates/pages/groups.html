@@ -1,0 +1,105 @@
+{{define "content"}}
+<div class="prose">
+  <h1>{{ .T "groups.title" }}</h1>
+  <p class="lede">{{ .T "groups.lede" }}</p>
+  <p class="section-note">{{ .T "groups.rule" }}</p>
+</div>
+
+<p id="unassessed-note" class="section-note" role="status" hidden></p>
+<p id="status" class="section-note" role="status" aria-live="polite"></p>
+
+<div id="items" class="themes"></div>
+
+<section id="revision-section" hidden>
+  <div class="prose">
+    <h2>{{ .T "revisions.title" }}</h2>
+    <p class="section-note">{{ .T "revisions.lede" }}</p>
+  </div>
+  <div id="revisions" class="themes"></div>
+</section>
+
+<section id="action-section" hidden>
+  <div class="prose">
+    <h2>{{ .T "queued_actions.title" }}</h2>
+    <p class="section-note">{{ .T "queued_actions.lede" }}</p>
+  </div>
+  <div id="queued-actions" class="themes"></div>
+</section>
+
+<section id="all-groups-section">
+  <div class="prose">
+    <h2>{{ .T "all_groups.title" }}</h2>
+    <p class="section-note">{{ .T "all_groups.lede" }}</p>
+  </div>
+
+  <div class="table-wrap">
+    <table class="data-table" id="all-groups"></table>
+  </div>
+
+  <div class="table-bar" id="group-pager" hidden>
+    <button class="button small secondary" type="button" id="groups-prev">&lsaquo;</button>
+    <span class="corpus-position" id="groups-position"></span>
+    <button class="button small secondary" type="button" id="groups-next">&rsaquo;</button>
+  </div>
+</section>
+
+<noscript>
+  <p class="empty">{{ .T "queue.noscript" }}</p>
+</noscript>
+
+<script nonce="{{ .Nonce }}">
+  window.groupStrings = {
+    siteBase: {{ .SiteBase }},
+    all: {
+      name: {{ .T "all_groups.name" }},
+      place: {{ .T "all_groups.place" }},
+      status: {{ .T "all_groups.status" }},
+      confidence: {{ .T "queue.confidence" }},
+      notAssessed: {{ .T "queue.not_assessed" }},
+      created: {{ .T "all_groups.created" }},
+      empty: {{ .T "all_groups.empty" }},
+      position: {{ .T "all_groups.position" }},
+      view: {{ .T "all_groups.view" }}
+    },
+    empty: {{ .T "groups.empty" }},
+    accept: {{ .T "groups.accept" }},
+    reject: {{ .T "groups.reject" }},
+    confirmReject: {{ .T "groups.confirm_reject" }},
+    reasonPrompt: {{ .T "groups.reason_prompt" }},
+    accepted: {{ .T "groups.accepted" }},
+    rejected: {{ .T "groups.rejected" }},
+    failed: {{ .T "queue.failed" }},
+    working: {{ .T "queue.working" }},
+    unassessed: {{ .T "groups.unassessed" }},
+    notAssessed: {{ .T "queue.not_assessed" }},
+    confidence: {{ .T "queue.confidence" }},
+    reasonLabel: {{ .T "curation.reason" }},
+    noPlace: {{ .T "groups.no_place" }},
+    contacts: {{ .T "groups.contacts" }},
+    noDescription: {{ .T "groups.no_description" }},
+    actions: {
+      empty: {{ .T "queued_actions.empty" }},
+      by: {{ .T "queued_actions.by" }},
+      when: {{ .T "queued_actions.when" }},
+      recurring: {{ .T "queued_actions.recurring" }},
+      accept: {{ .T "queued_actions.accept" }},
+      reject: {{ .T "queued_actions.reject" }},
+      confirmReject: {{ .T "queued_actions.confirm_reject" }},
+      accepted: {{ .T "queued_actions.accepted" }},
+      rejected: {{ .T "queued_actions.rejected" }}
+    },
+    revisions: {
+      empty: {{ .T "revisions.empty" }},
+      was: {{ .T "revisions.was" }},
+      becomes: {{ .T "revisions.becomes" }},
+      moved: {{ .T "revisions.moved" }},
+      accept: {{ .T "revisions.accept" }},
+      reject: {{ .T "revisions.reject" }},
+      confirmReject: {{ .T "revisions.confirm_reject" }},
+      accepted: {{ .T "revisions.accepted" }},
+      rejected: {{ .T "revisions.rejected" }}
+    }
+  };
+</script>
+<script src="/static/groups.js?v={{ .AssetVersion }}"></script>
+{{end}}

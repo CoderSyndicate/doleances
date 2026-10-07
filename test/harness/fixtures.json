@@ -1,0 +1,110 @@
+{
+  "messages": [
+    {
+      "text": "Depuis que la maternité a fermé, il faut faire cinquante-deux kilomètres pour accoucher. Ma fille est partie à trente-six semaines dormir chez sa tante en ville parce qu'on avait peur de la route de nuit en février. Ce n'est pas une décision de santé, c'est une décision de comptable, et c'est nous qui la payons.",
+      "nickname": "", "birth_year": 1958, "activity": "Retraitée",
+      "latitude": 46.1667, "longitude": 1.8667, "zoom": 11, "country": "FR"
+    },
+    {
+      "text": "Le bus ne passe plus le dimanche.",
+      "nickname": "", "birth_year": 1994, "activity": "Aide-soignante",
+      "latitude": 45.7772, "longitude": 3.0870, "zoom": 12, "country": "FR"
+    },
+    {
+      "text": "Je travaille depuis dix-neuf ans dans la même usine. Le loyer a pris cent vingt euros en deux ans, le gaz a doublé, mon salaire n'a pas bougé depuis 2019. Je fais les courses le soir pour attraper les réductions sur ce qui périme le lendemain. Ce qui me met en colère, ce n'est pas d'être pauvre : c'est qu'on nous répète que l'économie va bien.",
+      "nickname": "Martine", "birth_year": 1971, "activity": "Ouvrière",
+      "latitude": 50.2833, "longitude": 3.9667, "zoom": 12, "country": "FR"
+    },
+    {
+      "text": "Seit die Apotheke in unserer Straße zugemacht hat, fahre ich mit dem Bus quer durch die Stadt, nur um meine Tabletten zu holen. Mit 74 Jahren ist das jedes Mal ein halber Tag, und im Winter lasse ich es manchmal einfach sein.",
+      "nickname": "", "birth_year": 1952, "activity": "Rentnerin",
+      "latitude": 51.2203, "longitude": 6.7729, "zoom": 12, "country": "DE"
+    },
+    {
+      "text": "La poste du village est ouverte deux matinées par semaine, le percepteur est parti à la sous-préfecture, et pour la carte d'identité il faut prendre rendez-vous à quarante kilomètres, trois semaines à l'avance. On nous dit de faire les démarches en ligne. Je veux bien. Je n'ai pas de connexion qui tienne plus de dix minutes.",
+      "nickname": "", "birth_year": 1949, "activity": "Ancien agriculteur",
+      "latitude": 44.3500, "longitude": 2.5667, "zoom": 11, "country": "FR"
+    },
+    {
+      "text": "Mein Sohn ist vierzehn und wartet seit elf Monaten auf einen Therapieplatz. Elf Monate. Man sagt uns, das sei normal.",
+      "nickname": "", "birth_year": 1983, "activity": "Verkäuferin",
+      "latitude": 51.0504, "longitude": 13.7373, "zoom": 12, "country": "DE"
+    },
+    {
+      "text": "J'ai repris une licence à quarante-deux ans en cours du soir. Je ne demande pas qu'on me félicite, je demande qu'on arrête de dire que les gens ne veulent pas travailler.",
+      "nickname": "", "birth_year": 1982, "activity": "Magasinier",
+      "latitude": 47.2228, "longitude": 2.0703, "zoom": 12, "country": "FR"
+    },
+    {
+      "text": "Wir haben im Dorf keinen Arzt mehr. Der letzte ist in Rente gegangen und es kommt keiner nach. Wer kein Auto hat, hat auch keine Hausärztin.",
+      "nickname": "", "birth_year": 1966, "activity": "Landwirt",
+      "latitude": 49.8728, "longitude": 8.6512, "zoom": 11, "country": "DE"
+    }
+  ],
+  "groups": [
+    {
+      "name": "Assemblée de Guéret",
+      "description": "On se retrouve le premier mardi du mois à la salle des fêtes pour parler de ce qui ferme ici : la maternité, les lignes de bus, la poste.",
+      "latitude": 46.1667, "longitude": 1.8667, "zoom": 14, "country": "FR",
+      "actions": [
+        {
+          "title": "Réunion mensuelle",
+          "description": "Ouverte à tous, sans inscription. On lit les doléances écrites depuis la dernière fois et on décide de ce qu'on en fait.",
+          "type": "recurrent", "starts_time": "19:00",
+          "repeat": "monthly", "monthly": "weekday", "week": 1, "weekday": 2,
+          "note": "sauf en août"
+        },
+        {
+          "title": "Permanence écrivain public",
+          "description": "Aide gratuite pour les démarches en ligne : carte d'identité, retraite, allocations. Apportez vos papiers.",
+          "type": "recurrent", "starts_time": "14:00",
+          "repeat": "weekly", "interval": 2, "weekdays": [6]
+        }
+      ]
+    },
+    {
+      "name": "Nachbarschaftstreff Düsseldorf",
+      "description": "Jeden Monat in der Kneipe an der Ecke. Wir reden über Mieten, Buslinien und darüber, was hier sonst noch verschwindet.",
+      "latitude": 51.2203, "longitude": 6.7729, "zoom": 18, "country": "DE",
+      "actions": [
+        {
+          "title": "Stammtisch",
+          "description": "Offen für alle, kein Anmelden nötig. Wer zum ersten Mal kommt, sagt einfach Bescheid.",
+          "type": "recurrent", "starts_time": "19:00",
+          "repeat": "monthly", "monthly": "weekday", "week": 4, "weekday": 4
+        },
+        {
+          "title": "Jahreshauptversammlung",
+          "description": "Einmal im Jahr ziehen wir Bilanz und wählen neu. Alle Mitglieder sind eingeladen.",
+          "type": "recurrent", "starts_time": "14:00",
+          "repeat": "yearly", "month": 11, "monthly": "weekday", "week": 3, "weekday": 6
+        }
+      ]
+    },
+    {
+      "name": "Atelier de Lodève",
+      "description": "Un atelier de réparation ouvert à tous, le samedi matin, salle polyvalente. Apportez ce qui ne marche plus.",
+      "latitude": 43.7322, "longitude": 3.3186, "zoom": 14, "country": "FR",
+      "actions": [
+        {
+          "title": "Repair café",
+          "description": "Petit électroménager, vélos, vêtements. On répare ensemble plutôt que de jeter.",
+          "type": "recurrent", "starts_time": "09:30",
+          "repeat": "weekly", "interval": 1, "weekdays": [6]
+        }
+      ]
+    },
+    {
+      "name": "Bürgerinitiative Cottbus",
+      "description": "Wir treffen uns, weil die Buslinie in den Ortsteil gestrichen werden soll und niemand uns gefragt hat.",
+      "latitude": 51.7563, "longitude": 14.3329, "zoom": 13, "country": "DE",
+      "actions": [
+        {
+          "title": "Kundgebung vor dem Rathaus",
+          "description": "Gegen die Streichung der Linie 15. Bringt Schilder mit, wer welche hat.",
+          "type": "onetime", "in_days": 21, "starts_time": "17:00"
+        }
+      ]
+    }
+  ]
+}

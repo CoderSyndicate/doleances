@@ -1,0 +1,293 @@
+{{define "content"}}
+<div class="prose">
+  <h1>{{ .T "manage.title" }}</h1>
+  <p class="lede">{{ .T "manage.lede" }}</p>
+
+  {{ if .Saved }}<p class="form-notice" role="status">{{ .T "manage.saved" }}</p>{{ end }}
+  {{ if .Queued }}<p class="form-notice" role="status">{{ .T "manage.queued" }}</p>{{ end }}
+  {{ if .Proposed }}
+  {{/* Just created. There is no confirmation link to wait for any more — the
+       group exists, it is pending, and the person who proposed it is already
+       its admin and can fix a typo while a curator looks. */}}
+  <p class="form-notice" role="status">{{ .T "manage.proposed" }}</p>
+  {{ end }}
+  {{ if .Error }}<p class="form-error" role="alert">{{ .Error }}</p>{{ end }}
+
+  {{ if .Pending }}
+  <p class="section-note">{{ .T "manage.pending" }}</p>
+  {{ else }}
+  <p class="section-note">{{ .T "manage.published" }} <a href="/groups/{{ .ID }}">{{ .T "manage.view" }}</a></p>
+  {{ end }}
+</div>
+
+<form method="post" action="/groups/{{ .ID }}/manage">
+
+  <div class="split">
+  <div class="prose">
+  <label for="name">{{ .T "propose.name" }}</label>
+  <input type="text" id="name" name="name" maxlength="120" required autocomplete="off"
+         data-name-check="/api/groups/available"
+         data-taken="{{ .T "propose.name_taken" }}"
+         data-free="{{ .T "propose.name_free" }}"
+         value="{{ .Name }}">
+  <p class="name-status" id="name-status" role="status" aria-live="polite"></p>
+
+  <label for="description">{{ .T "propose.description" }}</label>
+  <textarea id="description" name="description" maxlength="2000">{{ .Descr }}</textarea>
+
+  </div>
+
+  <div class="split-aside">
+  <label>{{ .T "manage.place" }}
+    <span class="hint">{{ .T "propose.location_hint" }}</span>
+  </label>
+  <div id="map" data-country="{{ .Country }}" data-pick="true"
+       data-latitude="{{ with .Draft.Latitude }}{{ . }}{{ end }}"
+       data-longitude="{{ with .Draft.Longitude }}{{ . }}{{ end }}"></div>
+  <input type="hidden" id="latitude" name="latitude" data-role="latitude" value="{{ with .Draft.Latitude }}{{ . }}{{ end }}">
+  <input type="hidden" id="longitude" name="longitude" data-role="longitude" value="{{ with .Draft.Longitude }}{{ . }}{{ end }}">
+  <input type="hidden" id="place" name="place" value="{{ .Place }}">
+  <input type="hidden" id="country" name="country" value="{{ .Country }}">
+  <input type="hidden" id="zoom" name="zoom" data-role="zoom" value="">
+  {{ if .Place }}<p class="section-note">{{ .T "manage.place_current" }} {{ .Place }}</p>{{ end }}
+  </div>
+  </div>
+
+  <div class="prose">
+    <button class="button" type="submit">{{ .T "manage.save" }}</button>
+    <p class="section-note">{{ if .Pending }}{{ .T "manage.reassess" }}{{ else }}{{ .T "manage.reassess_published" }}{{ end }}</p>
+  </div>
+</form>
+
+{{/* How a group is reached, now that the register holds no way to contact
+     anybody. This is the first private text this project carries, and it is
+     worth naming as such: everything else here is written to be read by
+     everybody, which is what makes the classifier and the curation queue the
+     right shape. A message to a group is read by two or three people, so the
+     same guards are applied at the door and the group's own admins are the
+     moderators of what reaches them. */}}
+<div class="prose" id="messages">
+  <h2>{{ .T "messages.title" }}</h2>
+  <p class="section-note">{{ .T "messages.note" }}</p>
+</div>
+
+{{ if .Messages }}
+<div class="grid">
+  {{ range .Messages }}
+  <article class="card{{ if not .Read }} unread{{ end }}">
+    <div class="card-meta">
+      <span>{{ .CreatedAt.Format "2 January 2006 15:04" }}</span>
+      {{ if .From }}<span>{{ .From }}</span>{{ else }}<span>{{ $.T "card.anonymous" }}</span>{{ end }}
+      {{ if not .Read }}<span class="pill">{{ $.T "notifications.unread" }}</span>{{ end }}
+    </div>
+
+    <p class="card-text">{{ .Text }}</p>
+
+    {{ if not .Read }}
+    <footer class="card-actions">
+      <form method="post" action="/groups/{{ $.ID }}/messages">
+        <button class="button secondary" type="submit" name="read" value="{{ .ID }}">
+          {{ $.T "notifications.read" }}
+        </button>
+      </form>
+    </footer>
+    {{ end }}
+  </article>
+  {{ end }}
+</div>
+{{ else }}
+<div class="prose">
+  <p class="empty">{{ .T "messages.empty" }}</p>
+</div>
+{{ end }}
+
+<div class="prose" id="actions">
+  <h2>{{ .T "actions.title" }}</h2>
+  <p class="section-note">{{ .T "actions.note" }}</p>
+</div>
+
+<div class="table-bar">
+  <a class="button small" href="#action-panel">
+    {{ template "icon-plus" }}<span>{{ .T "actions.add" }}</span>
+  </a>
+</div>
+
+{{ if .Actions }}
+<div class="table-wrap">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>{{ .T "actions.what" }}</th>
+        <th>{{ .T "actions.when" }}</th>
+        <th>{{ .T "manage.status" }}</th>
+        <th class="actions-column"><span class="visually-hidden">{{ .T "manage.actions" }}</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      {{ range .Actions }}
+      <tr>
+        <td>
+          <strong>{{ .Title }}</strong>
+          {{ if .Place }}<div class="section-note">{{ .Place }}</div>{{ end }}
+        </td>
+        <td>
+          {{/* The stored next date, never a rule evaluated here. */}}
+          {{ if .NextOn }}<strong>{{ .NextOn }}</strong>{{ else }}<span class="section-note">{{ $.T "actions.no_next" }}</span>{{ end }}
+          {{ if .Parts }}
+          <div class="section-note">{{ template "rhythm" dict "Page" $ "Parts" .Parts }}</div>
+          {{ end }}
+          {{ if .Note }}<div class="section-note">{{ .Note }}</div>{{ end }}
+        </td>
+        <td>
+          {{ if .Retired }}<span class="pill warn">{{ $.T "actions.retired" }}</span>
+          {{ else if eq .Status "accepted" }}<span class="verified">{{ $.T "actions.live" }}</span>
+          {{ else if eq .Status "dropped" }}<span class="pill warn">{{ $.T "actions.refused" }}</span>
+          {{ else }}<span class="pill">{{ $.T "actions.waiting" }}</span>
+          {{ end }}
+          {{ if .Reason }}<div class="section-note">{{ .Reason }}</div>{{ end }}
+        </td>
+        <td class="actions-column">
+          <div class="row-actions">
+            {{/* A retired recurrent action comes back by somebody saying it
+                 still happens — the opposite guard to a date passing, and the
+                 only way a rhythm can be vouched for. */}}
+            {{ if and .Retired (eq .Type "recurrent") }}
+            <form method="post" action="/groups/{{ $.ID }}/actions">
+              <input type="hidden" name="confirm" value="{{ .ID }}">
+              <button class="button small secondary" type="submit">{{ $.T "actions.confirm" }}</button>
+            </form>
+            {{ end }}
+            <a class="icon-button" href="#edit-action-{{ .ID }}"
+               title="{{ $.T "manage.edit" }}" aria-label="{{ $.T "manage.edit" }}">
+              {{ template "icon-pencil" }}
+            </a>
+            <form method="post" action="/groups/{{ $.ID }}/actions">
+              <input type="hidden" name="delete" value="{{ .ID }}">
+              <button class="icon-button danger" type="submit"
+                      title="{{ $.T "actions.cancel" }}" aria-label="{{ $.T "actions.cancel" }}">
+                {{ template "icon-bin" }}
+              </button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      <tr class="contact-edit" id="edit-action-{{ .ID }}">
+        <td colspan="4">
+          {{ template "action-form" dict
+              "Page" $ "ActionID" .ID "Title" .Title "Description" .Description
+              "Type" .Type "StartsOn" .StartsOn "StartsTime" (clock .StartsAt)
+              "Repeat" (repeatOf .Parts) "Interval" (intervalOf .Parts)
+              "Weekdays" (weekdaysOf .Parts) "Monthly" (monthlyOf .Parts)
+              "Week" (weekOf .Parts) "Weekday" (weekdayOf .Parts)
+              "Day" (dayOf .Parts) "Month" (monthOf .Parts) "Note" .Note
+              "Elsewhere" .Elsewhere "Latitude" .Latitude
+              "Longitude" .Longitude "Place" .Place }}
+        </td>
+      </tr>
+      {{ end }}
+    </tbody>
+  </table>
+</div>
+{{ else }}
+<div class="prose">
+  <p class="empty">{{ .T "actions.empty" }}</p>
+</div>
+{{ end }}
+
+{{/* Announcing one. Same panel mechanism as adding a contact: a fragment link
+     opens it, and the server forces it open when a refused draft has to come
+     back with what was typed still in it. */}}
+<div class="overlay{{ if and .ActionOpen (not .EditingAction) }} open{{ end }}" id="action-panel"
+     role="dialog" aria-labelledby="action-panel-title" tabindex="-1">
+  <a class="overlay-backdrop" href="#actions" aria-label="{{ .T "manage.close" }}"></a>
+
+  <div class="overlay-panel">
+    <div class="overlay-header">
+      <h2 id="action-panel-title">{{ .T "actions.add" }}</h2>
+      <a class="icon-button" href="#actions"
+         title="{{ .T "manage.close" }}" aria-label="{{ .T "manage.close" }}">
+        {{ template "icon-close" }}
+      </a>
+    </div>
+
+    {{ if and .Error .ActionOpen (not .EditingAction) }}
+    <p class="form-error" role="alert">{{ .Error }}</p>
+    {{ end }}
+
+    {{ template "action-form" dict
+        "Page" . "ActionID" "" "Title" .ActionDraft.Title
+        "Description" .ActionDraft.Description "Type" .ActionDraft.Type
+        "StartsOn" .ActionDraft.StartsOn "StartsTime" .ActionDraft.StartsTime
+        "Repeat" .ActionDraft.Repeat "Interval" (atLeast .ActionDraft.Interval 1)
+        "Weekdays" .ActionDraft.Weekdays "Monthly" .ActionDraft.Monthly
+        "Week" (atLeast .ActionDraft.Week 1) "Weekday" .ActionDraft.Weekday
+        "Day" (atLeast .ActionDraft.Day 1) "Month" (atLeast .ActionDraft.Month 1)
+        "Note" .ActionDraft.Note
+        "Elsewhere" .ActionDraft.Elsewhere "Latitude" .ActionDraft.Latitude
+        "Longitude" .ActionDraft.Longitude "Place" .ActionDraft.Place }}
+  </div>
+</div>
+
+<div class="prose" id="members">
+  <h2>{{ .T "members.title" }}</h2>
+  <p class="section-note">{{ .T "members.note" }}</p>
+  {{/* There is no address column and nothing else to put there: an account is
+       a chosen name and nothing more, so what a group's admins see about their
+       own members is what those members decided to be called. */}}
+  <p class="section-note">{{ .T "members.privacy" }}</p>
+</div>
+
+{{ if .Members }}
+<div class="table-wrap">
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th>{{ .T "members.name" }}</th>
+        <th>{{ .T "members.joined" }}</th>
+        <th>{{ .T "members.role" }}</th>
+        <th class="actions-column"><span class="visually-hidden">{{ .T "manage.actions" }}</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      {{ range .Members }}
+      <tr>
+        <td>{{ with .Name }}{{ . }}{{ else }}{{ $.T "card.anonymous" }}{{ end }}</td>
+        <td>{{ .JoinedAt }}</td>
+        <td>
+          {{ if eq .Role "admin" }}<span class="verified">{{ $.T "members.admin" }}</span>
+          {{ else if eq .Role "host" }}<span class="pill">{{ $.T "members.host" }}</span>
+          {{ else }}<span class="section-note">{{ $.T "members.member" }}</span>
+          {{ end }}
+        </td>
+        <td class="actions-column">
+          <div class="row-actions">
+            {{/* An admin can be demoted as well as made. A privileged grant
+                 with no way back is a trap the first time somebody mis-clicks,
+                 and taking the role away leaves the membership alone. */}}
+            {{ if eq .Role "admin" }}
+            <form method="post" action="/groups/{{ $.ID }}/members">
+              <input type="hidden" name="account" value="{{ .AccountID }}">
+              <input type="hidden" name="role" value="">
+              <button class="button small secondary" type="submit">{{ $.T "members.demote" }}</button>
+            </form>
+            {{ else }}
+            <form method="post" action="/groups/{{ $.ID }}/members">
+              <input type="hidden" name="account" value="{{ .AccountID }}">
+              <input type="hidden" name="role" value="admin">
+              <button class="button small secondary" type="submit">{{ $.T "members.promote" }}</button>
+            </form>
+            {{ end }}
+          </div>
+        </td>
+      </tr>
+      {{ end }}
+    </tbody>
+  </table>
+</div>
+{{ else }}
+<div class="prose">
+  <p class="empty">{{ .T "members.empty" }}</p>
+</div>
+{{ end }}
+
+{{end}}

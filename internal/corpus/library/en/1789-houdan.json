@@ -1,0 +1,35 @@
+{
+  "source": {
+    "title": "Cahier de doléances of the town of Houdan",
+    "period": "1789",
+    "region": "Houdan, bailliage of Montfort-l'Amaury",
+    "latitude": 48.7906,
+    "longitude": 1.6017,
+    "language": "fr",
+    "reference": "Manuscript cahier, March 1789 — transcribed from photographs, uncollated",
+    "url": "",
+    "note": "English translation. The original is in internal/corpus/library/fr/."
+  },
+  "snippets": [
+    {
+      "id": "houdan-fardeau",
+      "title": "The crushing burden",
+      "text": "The inhabitants of Houdan, assembled and undersigned, protest against the crushing burden of taxes and charges of every kind — taille, capitation, vingtièmes, trade tax, corvée labour, aides, gabelle, registration duty, franc-fief — to all of which the financial administration has given every possible increase and extension."
+    },
+    {
+      "id": "houdan-impot-unique",
+      "title": "One tax, on all property",
+      "text": "They vote particularly for the soonest possible suppression of the aides and the gabelles; that a general tax on land be established, levied in money upon property of every kind, whether belonging to the Clergy, to the nobles, to the privileged or to others, to make good not only the yield of those two most disastrous taxes, but also that of any others whose suppression should be judged necessary to the well-being and tranquillity of society; offering to remit the proceeds of the said tax directly to the Royal treasury and without charges."
+    },
+    {
+      "id": "houdan-depenses",
+      "title": "Taxing spending, not land alone",
+      "text": "They likewise vote that persons owning no landed property — merchants, bankers, capitalists and rentiers — be taxed in proportion to their spending and their lodging."
+    },
+    {
+      "id": "houdan-ble",
+      "title": "Wheat beyond reach",
+      "text": "That wheat, at the excessive price at which it now stands — from 40 to 50 livres the setier weighing 300 pounds — is beyond the reach of the people in general, and does not allow them to live, being unable to meet it by their day-labour and wages; which is a striking grievance that the King's goodness may remedy."
+    }
+  ]
+}

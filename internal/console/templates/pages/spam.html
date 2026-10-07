@@ -1,0 +1,55 @@
+{{define "content"}}
+<div class="prose">
+  <h1>{{ .T "spam.title" }}</h1>
+  <p class="lede">{{ .T "spam.lede" }}</p>
+  <p class="section-note">{{ .T "spam.purpose" }}</p>
+  <p class="section-note">{{ .T "spam.contested_note" }}</p>
+</div>
+
+<form id="retention-form" class="prose">
+  <label for="spam_retention_hours">{{ .T "spam.retention" }}
+    <span class="hint">{{ .T "spam.retention_hint" }}</span>
+  </label>
+  <input type="number" id="spam_retention_hours" name="spam_retention_hours" min="1" max="168">
+  <div class="theme-bar">
+    <button class="button secondary" type="submit">{{ .T "spam.retention_save" }}</button>
+  </div>
+</form>
+
+<p id="status" class="section-note" role="status" aria-live="polite"></p>
+<p id="held" class="section-note"></p>
+
+<div id="items" class="themes"></div>
+  <div class="table-bar" id="spam-pager" hidden>
+    <button class="button small secondary" type="button" id="spam-prev">&lsaquo;</button>
+    <span class="corpus-position" id="spam-position"></span>
+    <button class="button small secondary" type="button" id="spam-next">&rsaquo;</button>
+  </div>
+
+
+<noscript>
+  <p class="empty">{{ .T "spam.noscript" }}</p>
+</noscript>
+
+<script nonce="{{ .Nonce }}">
+  window.spamStrings = {
+    empty: {{ .T "spam.empty" }},
+    rescue: {{ .T "spam.rescue" }},
+    remove: {{ .T "spam.delete" }},
+    confirmDelete: {{ .T "spam.confirm_delete" }},
+    confidence: {{ .T "spam.confidence" }},
+    contested: {{ .T "spam.contested" }},
+    duplicate: {{ .T "spam.duplicate" }},
+    payload: {{ .T "spam.payload" }},
+    refused: {{ .T "spam.refused" }},
+    expires: {{ .T "spam.expires" }},
+    rescued: {{ .T "spam.rescued" }},
+    saving: {{ .T "spam.saving" }},
+    saved: {{ .T "spam.saved" }},
+    failed: {{ .T "spam.failed" }},
+    reasonLabel: {{ .T "curation.reason" }},
+    heldCount: {{ .T "spam.held" }}
+  };
+</script>
+<script src="/static/spam.js?v={{ .AssetVersion }}"></script>
+{{end}}

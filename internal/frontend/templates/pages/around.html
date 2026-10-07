@@ -1,0 +1,15 @@
+{{define "content"}}
+<div class="prose">
+  <h1>{{ .T "around.title" }}</h1>
+  <p class="lede">{{ .T "around.lede" }}</p>
+</div>
+
+<div id="map" data-country="{{ .Country }}" data-groups="true"></div>
+<p class="section-note">{{ .T "around.attribution" }}</p>
+
+{{/* Under the map on purpose: the empty patch somebody is looking at is the
+     argument for starting one, and it is the moment they are looking at it. */}}
+<div class="prose">
+  <p><a class="button" href="/groups/new">{{ .T "group.propose" }}</a></p>
+</div>
+{{end}}

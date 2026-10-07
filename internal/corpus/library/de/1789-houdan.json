@@ -1,0 +1,35 @@
+{
+  "source": {
+    "title": "Beschwerdeheft der Stadt Houdan",
+    "period": "1789",
+    "region": "Houdan, Bailliage Montfort-l'Amaury",
+    "latitude": 48.7906,
+    "longitude": 1.6017,
+    "language": "fr",
+    "reference": "Handschriftliches Heft, März 1789 — nach Fotografien transkribiert, nicht kollationiert",
+    "url": "",
+    "note": "Deutsche Übersetzung. Das Original liegt in internal/corpus/library/fr/."
+  },
+  "snippets": [
+    {
+      "id": "houdan-fardeau",
+      "title": "Die erdrückende Last",
+      "text": "Die versammelten und unterzeichneten Einwohner von Houdan erheben Einspruch gegen die erdrückende Last an Steuern und Abgaben jeder Art — taille, capitation, vingtièmes, Gewerbesteuer, Frondienste, aides, gabelle, Stempelabgabe, franc-fief —, denen die Finanzverwaltung jede mögliche Steigerung und Ausweitung gegeben hat."
+    },
+    {
+      "id": "houdan-impot-unique",
+      "title": "Eine einzige Steuer, auf allen Besitz",
+      "text": "Sie stimmen besonders für die baldigste Abschaffung der aides und der gabelles; dafür, dass eine allgemeine Grundsteuer eingerichtet werde, in Geld erhoben auf Besitz jeder Art, sei er dem Klerus, dem Adel, den Privilegierten oder anderen gehörig, um nicht allein den Ertrag jener beiden verheerendsten Steuern zu ersetzen, sondern auch den aller weiteren, deren Abschaffung man für das Wohl und die Ruhe der Gesellschaft als nötig erachten würde; wobei angeboten wird, den Ertrag dieser Steuer unmittelbar und ohne Gebühren an die königliche Kasse abzuführen."
+    },
+    {
+      "id": "houdan-depenses",
+      "title": "Den Aufwand besteuern, nicht nur den Boden",
+      "text": "Sie stimmen ebenso dafür, dass Personen ohne Grundbesitz — Kaufleute, Bankiers, Kapitalisten und Rentiers — nach Maßgabe ihrer Ausgaben und ihrer Wohnung besteuert werden."
+    },
+    {
+      "id": "houdan-ble",
+      "title": "Das Korn außer Reichweite",
+      "text": "Dass das Korn zu dem übermäßigen Preis, auf dem es gegenwärtig steht — 40 bis 50 Livres der Setier zu 300 Pfund —, für das Volk im Allgemeinen außer Reichweite ist und ihm nicht erlaubt zu leben, da es ihn durch Tagelohn und Lohn nicht erreichen kann; eine eindringliche Klage, der die Güte des Monarchen abhelfen kann."
+    }
+  ]
+}
